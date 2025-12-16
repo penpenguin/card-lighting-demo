@@ -11,7 +11,8 @@
     "check": "astro check"
   },
   "dependencies": {
-    "astro": "^5.16.5"
+    "astro": "^5.16.5",
+    "tweakpane": "^4.0.5"
   },
   "devDependencies": {
     "@types/node": "^22.9.0",
