@@ -11,6 +11,12 @@
 				--ry: 0deg;
 				--mx: 50%;
 				--my: 50%;
+				--posx: 50%;
+				--posy: 50%;
+				--tx: 0px;
+				--ty: 0px;
+				--s: 1;
+				--hyp: 0.5;
 				--hover: 0;
 				--tilt-x-max: 12;
 				--tilt-y-max: 14;
@@ -23,6 +29,7 @@
 				--light-angle: 0deg;
 				--light-strength: 1;
 				--lookPreset: hybrid;
+				--grain: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 160 160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/></filter><rect width='160' height='160' filter='url(%23n)' opacity='0.45'/></svg>");
 				color-scheme: dark;
 			}
 
@@ -84,15 +91,55 @@
 				height: 220px;
 				border-radius: 22px;
 				transform-style: preserve-3d;
-				background: #0c0f17;
+				background: radial-gradient(140% 120% at 50% 30%, #1a1f30, #0a0e18 64%);
 				box-shadow:
 					0 32px 80px rgba(0, 0, 0, 0.72),
 					0 12px 26px rgba(0, 0, 0, 0.55),
 					0 3px 8px rgba(0, 0, 0, 0.38);
-				transform: rotateX(var(--rx)) rotateY(var(--ry)) translateZ(16px);
-				transition: box-shadow 260ms ease;
+				transform: translateZ(16px);
+				transition: box-shadow 260ms ease, transform 200ms ease;
 				overflow: hidden;
 				z-index: 1;
+			}
+
+			.card::before,
+			.card::after {
+				content: "";
+				position: absolute;
+				inset: 0;
+				border-radius: inherit;
+				pointer-events: none;
+			}
+
+			.card::before {
+				background: conic-gradient(
+						from 220deg,
+						rgba(255, 200, 120, 0.4),
+						rgba(120, 190, 255, 0.35),
+						rgba(255, 140, 220, 0.35),
+						rgba(255, 200, 120, 0.4)
+					)
+					border-box;
+				mask:
+					linear-gradient(#000, #000) content-box,
+					linear-gradient(#000, #000);
+				mask-composite: exclude;
+				-webkit-mask-composite: xor;
+				padding: 2px;
+				opacity: 0.9;
+				filter: blur(0.15px);
+				mix-blend-mode: screen;
+			}
+
+			.card::after {
+				inset: 6px;
+				border-radius: 16px;
+				background:
+					linear-gradient(135deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0)),
+					radial-gradient(140% 120% at 50% 35%, rgba(255, 255, 255, 0.08), transparent 60%),
+					repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.04) 0 1px, transparent 1px 4px);
+				opacity: 0.7;
+				mix-blend-mode: screen;
 			}
 
 			.card:hover {
@@ -100,6 +147,51 @@
 					0 40px 86px rgba(0, 0, 0, 0.78),
 					0 16px 34px rgba(0, 0, 0, 0.62),
 					0 4px 10px rgba(0, 0, 0, 0.42);
+			}
+
+			.card__translater {
+				position: absolute;
+				inset: 0;
+				transform: translate3d(var(--tx), var(--ty), 0) scale(var(--s));
+				transform-style: preserve-3d;
+				transition: transform 120ms ease;
+			}
+
+			.card__rotator {
+				position: absolute;
+				inset: 0;
+				transform: rotateY(var(--ry)) rotateX(var(--rx));
+				transform-style: preserve-3d;
+			}
+
+			.card__rotator * {
+				transform-style: preserve-3d;
+			}
+
+			.card__frame {
+				position: absolute;
+				inset: 8px;
+				border-radius: 14px;
+				background:
+					linear-gradient(140deg, rgba(255, 225, 170, 0.18), rgba(120, 180, 255, 0.12), rgba(255, 160, 230, 0.16)),
+					radial-gradient(140% 120% at 50% 10%, rgba(255, 255, 255, 0.08), transparent 60%);
+				box-shadow:
+					inset 0 0 0 1px rgba(255, 255, 255, 0.07),
+					inset 0 0 0 2px rgba(0, 0, 0, 0.5),
+					inset 0 4px 18px rgba(255, 255, 255, 0.06);
+				overflow: hidden;
+				transform: translateZ(6px);
+			}
+
+			.card__cut {
+				position: absolute;
+				inset: 6px;
+				border-radius: 12px;
+				background: linear-gradient(160deg, rgba(0, 0, 0, 0.35), rgba(255, 255, 255, 0.05));
+				mask: polygon(4% 0%, 96% 0%, 100% 6%, 100% 94%, 96% 100%, 4% 100%, 0% 94%, 0% 6%);
+				mix-blend-mode: soft-light;
+				pointer-events: none;
+				transform: translateZ(5px);
 			}
 
 			.layer {
@@ -205,12 +297,12 @@
 
 			.layer-shine {
 				background: radial-gradient(
-						220px 160px at var(--mx) var(--my),
+						320px 240px at var(--mx) var(--my),
 						rgba(255, 255, 255, 0.55),
 						rgba(255, 255, 255, 0.18) 32%,
 						rgba(255, 255, 255, 0) 65%
 					),
-					radial-gradient(420px 320px at var(--mx) var(--my), rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0) 70%);
+					radial-gradient(520px 360px at var(--mx) var(--my), rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0) 70%);
 				mix-blend-mode: screen;
 				opacity: calc((0.12 + var(--shine-max) * var(--hover)) * (0.75 + 0.35 * var(--light-strength)));
 				filter: blur(0.4px) hue-rotate(var(--light-angle));
@@ -229,28 +321,327 @@
 				transform: translateZ(11px);
 			}
 
+			.card__shine,
+			.card__glare {
+				position: absolute;
+				inset: 0;
+				border-radius: inherit;
+				pointer-events: none;
+				background-repeat: repeat;
+				background-size: cover;
+				mix-blend-mode: screen;
+				overflow: hidden;
+				transform: translateZ(13px);
+			}
+
+			.card__shine::before,
+			.card__shine::after,
+			.card__glare::before,
+			.card__glare::after {
+				content: "";
+				position: absolute;
+				inset: 0;
+				border-radius: inherit;
+				pointer-events: none;
+			}
+
+			.card[data-gallery="true"] .card__shine,
+			.card[data-gallery="true"] .card__glare {
+				clip-path: inset(2.8% 4% round 2.55% / 1.5%);
+			}
+
+			.card__glare {
+				background: radial-gradient(320px 240px at var(--mx) var(--my), rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0) 70%);
+				mix-blend-mode: screen;
+				opacity: 0.8;
+				filter: blur(4px);
+			}
+
+			/* --- rare holo --- */
+			.card[data-rarity="rare holo"] .card__shine {
+				clip-path: inset(4.5% 4.5% 4.5% 4.5%);
+				background-image:
+					repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.26), rgba(255, 255, 255, 0.02) 6px, rgba(0, 0, 0, 0) 7px 18px),
+					linear-gradient(120deg, rgba(255, 130, 220, 0.35), rgba(140, 200, 255, 0.45), rgba(255, 240, 170, 0.4)),
+					repeating-linear-gradient(-45deg, rgba(255, 255, 255, 0.08), rgba(0, 0, 0, 0) 18px),
+					radial-gradient(220px 180px at var(--mx) var(--my), rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0) 68%);
+				background-blend-mode: soft-light, soft-light, screen, overlay;
+				background-position: var(--posx) var(--posy);
+				filter: brightness(calc((var(--hyp) + 0.7) * 0.7)) contrast(3.2) saturate(0.66);
+			}
+
+			.card[data-rarity="rare holo"][data-subtypes^="stage"] .card__shine {
+				clip-path: polygon(9% 11%, 91% 11%, 91% 55%, 86% 58%, 14% 58%, 9% 55%);
+			}
+
+			.card[data-rarity="rare holo"][data-subtypes^="supporter"] .card__shine {
+				clip-path: inset(14.5% 7.9% 48.2% 8.7%);
+			}
+
+			/* --- rare holo galaxy --- */
+			.card[data-rarity="rare holo galaxy"] .card__shine {
+				clip-path: inset(4.5% 4.5% 4.5% 4.5%);
+				background-image:
+					radial-gradient(240px 200px at calc(50% - (var(--mx) - 50%) * 2.5) calc(50% - (var(--my) - 50%) * 2.5), rgba(60, 120, 255, 0.35), transparent 70%),
+					radial-gradient(200px 180px at var(--mx) var(--my), rgba(255, 255, 255, 0.3), transparent 70%),
+					repeating-radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.9) 0 1px, transparent 1px 4px),
+					var(--grain);
+				background-blend-mode: color-dodge, screen, saturation, color-dodge;
+				mix-blend-mode: screen;
+				filter: brightness(calc((var(--hyp) * 0.3) + 0.6)) saturate(1.2);
+			}
+
+			.card[data-rarity="rare holo galaxy"] .card__glare {
+				background: radial-gradient(260px 200px at var(--mx) var(--my), rgba(220, 240, 255, 0.55), rgba(0, 0, 0, 0));
+				mix-blend-mode: color-dodge;
+				opacity: 0.85;
+				filter: blur(6px);
+			}
+
+			.card[data-rarity="rare holo galaxy"][data-subtypes^="stage"] .card__shine {
+				clip-path: polygon(9% 11%, 91% 11%, 91% 55%, 86% 58%, 14% 58%, 9% 55%);
+			}
+
+			.card[data-rarity="rare holo galaxy"][data-subtypes^="supporter"] .card__shine {
+				clip-path: inset(14.5% 7.9% 48.2% 8.7%);
+			}
+
+			/* --- rare holo v --- */
+			.card[data-rarity*="rare holo v"] .card__shine {
+				clip-path: inset(6% 6% 6% 6% round 4% 4%);
+				background-image:
+					var(--grain),
+					linear-gradient(90deg, rgba(255, 180, 255, 0.32), rgba(120, 220, 255, 0.34), rgba(255, 210, 150, 0.35)),
+					repeating-linear-gradient(-60deg, rgba(0, 0, 0, 0.12) 0 8px, rgba(255, 255, 255, 0.05) 8px 12px),
+					radial-gradient(220px 200px at var(--mx) var(--my), rgba(255, 255, 255, 0.26), rgba(0, 0, 0, 0));
+				background-blend-mode: screen, hue, hard-light, overlay;
+				background-position: var(--posx) var(--posy);
+			}
+
+			.card[data-rarity*="rare holo v"] .card__shine::after {
+				background-image:
+					linear-gradient(120deg, rgba(255, 140, 220, 0.35), rgba(120, 200, 255, 0.35), rgba(255, 230, 160, 0.3)),
+					radial-gradient(260px 200px at calc(100% - var(--mx)) calc(100% - var(--my)), rgba(255, 255, 255, 0.22), transparent 70%);
+				background-blend-mode: soft-light;
+				background-position: calc(100% - var(--posx)) calc(100% - var(--posy));
+				mix-blend-mode: soft-light;
+				opacity: 0.8;
+				filter: contrast(1.4) saturate(1.1);
+			}
+
+			/* --- rare holo vmax --- */
+			.card[data-rarity="rare holo vmax"] .card__shine {
+				clip-path: inset(6% 6% 6% 6% round 4% 4%);
+				background-image:
+					linear-gradient(135deg, rgba(255, 120, 200, 0.35), rgba(120, 220, 255, 0.35), rgba(240, 200, 255, 0.3)),
+					repeating-linear-gradient(60deg, rgba(255, 255, 255, 0.1) 0 6px, rgba(0, 0, 0, 0) 6px 14px),
+					radial-gradient(260px 220px at var(--mx) var(--my), rgba(255, 255, 255, 0.32), transparent 75%);
+				background-blend-mode: color-burn, screen, soft-light;
+				background-size: 1100% 1100%, 420% 420%, 100% 100%;
+				filter: brightness(calc((var(--hyp) * 0.3) + 0.5));
+			}
+
+			/* --- rare holo vstar --- */
+			.card[data-rarity="rare holo vstar"][data-supertype="pokemon"] .card__shine {
+				clip-path: inset(5% 5% 5% 5% round 4% 4%);
+				background-image:
+					linear-gradient(120deg, rgba(255, 240, 210, 0.38), rgba(150, 210, 255, 0.34), rgba(255, 180, 220, 0.32)),
+					repeating-linear-gradient(-45deg, rgba(0, 0, 0, 0.12) 0 10px, rgba(255, 255, 255, 0.04) 10px 18px),
+					radial-gradient(240px 220px at var(--mx) var(--my), rgba(255, 255, 255, 0.26), transparent 72%);
+				background-blend-mode: soft-light, hue, hard-light;
+			}
+
+			.card[data-rarity="rare holo vstar"][data-supertype="pokemon"] .card__shine::after {
+				background-image:
+					repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.2) 0 4px, rgba(0, 0, 0, 0) 4px 12px);
+				background-size: 320% 320%;
+				background-position: calc(100% - var(--posx)) calc(100% - var(--posy));
+				mix-blend-mode: exclusion;
+				opacity: 0.9;
+			}
+
+			/* --- rare ultra (pokémon) --- */
+			.card[data-rarity="rare ultra"][data-supertype="pokemon"] .card__shine {
+				clip-path: inset(5.2% 5.2% 5.2% 5.2% round 3.5% 3.5%);
+				background-image:
+					linear-gradient(110deg, rgba(255, 210, 140, 0.35), rgba(120, 200, 255, 0.4), rgba(255, 120, 200, 0.32)),
+					repeating-linear-gradient(-60deg, rgba(0, 0, 0, 0.14) 0 9px, rgba(255, 255, 255, 0.06) 9px 16px),
+					radial-gradient(260px 210px at var(--mx) var(--my), rgba(255, 255, 255, 0.25), transparent 74%);
+				background-blend-mode: exclusion, hue, hard-light;
+				filter: brightness(calc(0.5 + var(--hyp) * 0.4));
+			}
+
+			.card[data-rarity="rare ultra"][data-supertype="pokemon"] .card__shine::after {
+				background-image:
+					linear-gradient(130deg, rgba(255, 140, 220, 0.36), rgba(120, 220, 255, 0.3));
+				mix-blend-mode: exclusion;
+				background-position: calc(100% - var(--posx)) calc(100% - var(--posy));
+				opacity: 0.9;
+			}
+
+			/* --- rare ultra supporter --- */
+			.card[data-rarity="rare ultra"][data-subtypes*="supporter"] .card__shine {
+				clip-path: inset(5.2% 5.2% 5.2% 5.2% round 3.5% 3.5%);
+				background-image:
+					linear-gradient(115deg, rgba(255, 210, 140, 0.28), rgba(120, 200, 255, 0.38), rgba(255, 120, 200, 0.28)),
+					repeating-linear-gradient(-60deg, rgba(255, 255, 255, 0.08) 0 8px, rgba(0, 0, 0, 0.08) 8px 16px),
+					radial-gradient(260px 210px at var(--mx) var(--my), rgba(255, 255, 255, 0.25), transparent 74%);
+				background-blend-mode: difference, hue, hard-light;
+			}
+
+			.card[data-rarity="rare ultra"][data-subtypes*="supporter"] .card__shine::after {
+				background-image:
+					linear-gradient(130deg, rgba(255, 255, 255, 0.32), rgba(120, 180, 255, 0.26));
+				mix-blend-mode: exclusion;
+				background-position: calc(100% - var(--posx)) calc(100% - var(--posy));
+				opacity: 0.9;
+			}
+
+			/* --- rare rainbow --- */
+			.card[data-rarity^="rare rainbow"] .card__shine {
+				clip-path: inset(5% 5% 5% 5% round 3.5% 3.5%);
+				background-image:
+					linear-gradient(55deg, rgba(255, 180, 255, 0.35), rgba(120, 220, 255, 0.35), rgba(255, 230, 160, 0.34)),
+					repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.08) 0 6px, rgba(0, 0, 0, 0) 6px 14px),
+					repeating-linear-gradient(-45deg, rgba(0, 0, 0, 0.12) 0 10px, rgba(255, 255, 255, 0.05) 10px 18px),
+					radial-gradient(260px 210px at var(--mx) calc(var(--my) * 1.5), rgba(255, 255, 255, 0.22), transparent 78%);
+				background-size: 180% 180%, 240% 240%, 220% 220%, 100% 100%;
+				background-position: var(--posx) calc(var(--posy) * 1.5);
+				background-blend-mode: color-burn, soft-light, normal, screen;
+				filter: brightness(calc(0.6 + var(--hyp) * 0.4));
+			}
+
+			.card[data-rarity^="rare rainbow"] .card__shine::after {
+				background-image:
+					linear-gradient(125deg, rgba(255, 255, 255, 0.24), rgba(120, 220, 255, 0.18), rgba(255, 255, 255, 0.2));
+				mix-blend-mode: exclusion;
+				background-position: calc(100% - var(--posx)) calc(100% - var(--posy));
+				opacity: 0.85;
+			}
+
+			.card[data-rarity="rare rainbow alt"] .card__shine {
+				filter: contrast(3) saturate(0.7) brightness(calc(0.55 + var(--hyp) * 0.5));
+			}
+
+			/* --- rare secret --- */
+			.card[data-rarity="rare secret"] .card__shine {
+				clip-path: inset(5% 5% 5% 5% round 3.5% 3.5%);
+				background-image:
+					linear-gradient(140deg, rgba(255, 210, 140, 0.32), rgba(200, 160, 80, 0.4), rgba(255, 230, 160, 0.32)),
+					repeating-linear-gradient(45deg, rgba(0, 0, 0, 0.2) 0 6px, rgba(255, 255, 255, 0.08) 6px 12px),
+					radial-gradient(240px 200px at var(--mx) var(--my), rgba(255, 255, 255, 0.24), transparent 76%);
+				background-blend-mode: color-burn, darken, screen;
+				filter: brightness(calc(0.6 + var(--hyp) * 0.45));
+			}
+
+			.card[data-rarity="rare secret"] .card__shine::after {
+				background-image:
+					linear-gradient(120deg, rgba(255, 255, 255, 0.25), rgba(180, 140, 60, 0.24));
+				mix-blend-mode: exclusion;
+				background-position: calc(100% - var(--posx)) calc(100% - var(--posy));
+				opacity: 0.8;
+			}
+
+			/* --- radiant --- */
+			.card[data-rarity*="radiant"] .card__shine {
+				clip-path: inset(2.8% 4% round 2.55% / 1.5%);
+				opacity: calc(((var(--hyp) * 0.7) + 0.2) * 1);
+				background-image:
+					linear-gradient(55deg, rgba(255, 180, 240, 0.5), rgba(120, 220, 255, 0.5), rgba(255, 230, 160, 0.45)),
+					repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.12) 0 6px, rgba(0, 0, 0, 0) 6px 12px),
+					repeating-linear-gradient(-45deg, rgba(0, 0, 0, 0.12) 0 8px, rgba(255, 255, 255, 0.06) 8px 16px);
+				background-blend-mode: color-dodge, color-dodge, screen;
+				filter: contrast(4) saturate(1.2);
+			}
+
+			.card[data-rarity*="radiant"] .card__shine::after {
+				background-image:
+					linear-gradient(120deg, rgba(255, 255, 255, 0.25), rgba(120, 200, 255, 0.2), rgba(255, 210, 160, 0.22));
+				mix-blend-mode: soft-light;
+				background-blend-mode: multiply;
+				opacity: 0.8;
+			}
+
+			.card[data-rarity*="radiant"] .card__shine::before {
+				background-image:
+					radial-gradient(120% 120% at var(--mx) var(--my), rgba(0, 0, 0, 0.3), transparent 75%);
+				mix-blend-mode: multiply;
+				opacity: 0.6;
+			}
+
+			/* --- トレーナーギャラリー --- */
+			.card[data-rarity="rare holo"][data-gallery="true"] .card__shine {
+				clip-path: inset(2.8% 4% round 2.55% / 1.5%);
+				background-image:
+					linear-gradient(115deg, rgba(255, 220, 255, 0.75), rgba(140, 200, 255, 0.65), rgba(255, 210, 160, 0.6)),
+					repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.08) 0 10px, rgba(0, 0, 0, 0) 10px 18px);
+				background-blend-mode: color-dodge;
+			}
+
+			.card[data-rarity="rare holo"][data-gallery="true"] .card__shine::after {
+				background: radial-gradient(280px 200px at var(--mx) var(--my), rgba(255, 255, 255, 0.45), transparent 70%);
+				mix-blend-mode: hard-light;
+				opacity: 0.75;
+			}
+
+			/* --- トレーナーギャラリーV --- */
+			.card[data-rarity="rare holo v"][data-gallery="true"] .card__shine {
+				clip-path: inset(4% 4% 4% 4% round 3% 3%);
+				--img: url("illusion.webp");
+				--imgsize: 60%;
+				background-image:
+					var(--img),
+					repeating-linear-gradient(-45deg, rgba(0, 0, 0, 0.12) 0 8px, rgba(255, 255, 255, 0.05) 8px 16px),
+					radial-gradient(240px 220px at var(--mx) var(--my), rgba(255, 255, 255, 0.24), transparent 72%);
+				background-size: var(--imgsize) var(--imgsize), 220% 220%, 100% 100%;
+				background-blend-mode: exclusion, hue, hard-light;
+				filter: brightness(calc(0.55 + var(--hyp) * 0.5));
+			}
+
+			.card[data-rarity="rare holo v"][data-gallery="true"] .card__shine::after {
+				background-image:
+					linear-gradient(130deg, rgba(255, 140, 220, 0.32), rgba(120, 220, 255, 0.28));
+				mix-blend-mode: exclusion;
+				background-position: calc(100% - var(--posx)) calc(100% - var(--posy));
+				opacity: 0.9;
+			}
+
+			.card[data-rarity="rare holo v"][data-gallery="true"][data-subtypes*="vmax"] .card__shine {
+				--img: url("stylish.webp");
+				--imgsize: 48%;
+			}
+
 			.content {
 				position: relative;
 				height: 100%;
-				padding: 22px 26px;
+				padding: 18px 18px 16px;
 				display: grid;
 				grid-template-rows: auto 1fr auto;
+				gap: 14px;
 				transform: translateZ(14px);
+				color: #e8ebf5;
+				text-shadow: 0 1px 1px rgba(0, 0, 0, 0.55);
+			}
+
+			.header {
+				display: grid;
+				grid-template-columns: auto 1fr auto;
+				align-items: center;
+				gap: 12px;
 			}
 
 			.logo {
 				font-size: 18px;
-				font-weight: 700;
+				font-weight: 800;
 				letter-spacing: 0.14em;
 				text-transform: uppercase;
 				background: linear-gradient(90deg, #f7e7b4, #d2b06f, #f7e7b4);
 				-webkit-background-clip: text;
 				color: transparent;
-				text-shadow: 0 1px 0 rgba(0, 0, 0, 0.35), 0 -1px 0 rgba(255, 255, 255, 0.08);
+				text-shadow: 0 1px 0 rgba(0, 0, 0, 0.38), 0 -1px 0 rgba(255, 255, 255, 0.08);
 			}
 
 			.chip {
-				justify-self: end;
 				width: 46px;
 				height: 34px;
 				border-radius: 8px;
@@ -269,15 +660,76 @@
 				mask: linear-gradient(90deg, #000 0 30%, transparent 30% 70%, #000 70% 100%);
 			}
 
+			.badge {
+				font-size: 11px;
+				font-weight: 700;
+				letter-spacing: 0.08em;
+				text-transform: uppercase;
+				padding: 6px 10px;
+				border-radius: 10px;
+				border: 1px solid rgba(255, 255, 255, 0.18);
+				background: linear-gradient(120deg, rgba(255, 210, 120, 0.22), rgba(120, 200, 255, 0.18), rgba(255, 140, 220, 0.2));
+				box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22);
+			}
+
+			.number {
+				display: grid;
+				grid-template-columns: repeat(4, 1fr);
+				gap: 10px;
+				font-size: 20px;
+				letter-spacing: 0.18em;
+				font-weight: 700;
+				padding: 14px 12px;
+				border-radius: 12px;
+				background:
+					linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0)),
+					radial-gradient(120% 120% at 50% 30%, rgba(255, 255, 255, 0.08), transparent 60%),
+					repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.04) 0 2px, transparent 2px 7px);
+				box-shadow:
+					inset 0 0 0 1px rgba(255, 255, 255, 0.04),
+					inset 0 10px 18px rgba(255, 255, 255, 0.06),
+					inset 0 -10px 18px rgba(0, 0, 0, 0.25);
+				align-items: center;
+				justify-items: center;
+			}
+
+			.footer {
+				display: grid;
+				grid-template-columns: 1fr auto auto;
+				align-items: center;
+				gap: 14px;
+				font-size: 12px;
+				letter-spacing: 0.08em;
+			}
+
+			.holder {
+				text-transform: uppercase;
+				font-weight: 700;
+			}
+
+			.expiry {
+				text-align: right;
+			}
+
+			.network {
+				font-weight: 800;
+				font-size: 14px;
+				letter-spacing: 0.1em;
+				padding: 8px 10px;
+				border-radius: 10px;
+				background: radial-gradient(140% 140% at 50% 50%, rgba(255, 220, 120, 0.25), rgba(255, 140, 220, 0.2), rgba(120, 190, 255, 0.2));
+				box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2);
+			}
+
 			.subtitle {
 				align-self: end;
-				font-size: 13px;
+				font-size: 11px;
 				letter-spacing: 0.08em;
-				color: rgba(233, 236, 242, 0.72);
+				color: rgba(233, 236, 242, 0.7);
 			}
 
 			.meta {
-				font-size: 11px;
+				font-size: 10px;
 				color: rgba(233, 236, 242, 0.55);
 				letter-spacing: 0.08em;
 			}
@@ -310,22 +762,50 @@
 		<h1 class="sr-only">Card Lighting Demo</h1>
 		<div id="pane-host" class="pane-host" aria-hidden="true"></div>
 		<main class="stage">
-			<div class="card" id="card">
-				<div class="layer layer-shadow"></div>
-				<div class="layer layer-base"></div>
-				<div class="layer layer-coat"></div>
-				<div class="layer layer-texture"></div>
-				<div class="layer layer-foil"></div>
-				<div class="layer layer-holo"></div>
-				<canvas class="layer layer-prism" id="prism-canvas"></canvas>
-				<div class="layer layer-shine"></div>
-				<div class="layer layer-rim"></div>
-
-				<div class="content">
-					<div class="logo">Card Lighting</div>
-					<div class="chip" aria-hidden="true"></div>
-					<div class="subtitle">Specular study</div>
-					<div class="meta">CSS × Light × Tilt</div>
+			<div
+				class="card"
+				id="card"
+				data-rarity="rare holo"
+				data-supertype="pokemon"
+				data-subtypes="basic"
+				data-gallery="false"
+			>
+				<div class="card__translater">
+					<div class="card__rotator">
+						<div class="card__frame"></div>
+						<div class="card__cut"></div>
+						<div class="layer layer-shadow"></div>
+						<div class="layer layer-base"></div>
+						<div class="layer layer-coat"></div>
+						<div class="layer layer-texture"></div>
+						<div class="layer layer-foil"></div>
+						<div class="layer layer-holo"></div>
+						<canvas class="layer layer-prism" id="prism-canvas"></canvas>
+						<div class="layer layer-shine"></div>
+						<div class="layer layer-rim"></div>
+						<div class="card__shine" aria-hidden="true"></div>
+						<div class="card__glare" aria-hidden="true"></div>
+						<div class="content">
+							<div class="header">
+								<div class="logo">Card Lighting</div>
+								<div class="badge">Premium</div>
+								<div class="chip" aria-hidden="true"></div>
+							</div>
+							<div class="number" aria-label="Card number">
+								<span>5248</span>
+								<span>1903</span>
+								<span>7741</span>
+								<span>0826</span>
+							</div>
+							<div class="footer">
+								<div class="holder">ALEXANDER NOVA</div>
+								<div class="expiry">VALID<br />12/28</div>
+								<div class="network">VISTA</div>
+							</div>
+							<div class="subtitle">Specular study</div>
+							<div class="meta">CSS × Light × Tilt</div>
+						</div>
+					</div>
 				</div>
 			</div>
 		</main>

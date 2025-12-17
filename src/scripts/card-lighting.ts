@@ -3,176 +3,173 @@ import { Pane } from "tweakpane";
 const card = document.getElementById("card") as HTMLElement | null;
 const paneHost = document.getElementById("pane-host") as HTMLElement | null;
 
-if (card && paneHost) {
-  const state = { rx: 0, ry: 0, mx: 50, my: 50, hover: 0, lightAngle: 0, lightStrength: 1 };
-  const target = { rx: 0, ry: 0, mx: 50, my: 50, hover: 0, lightAngle: 0, lightStrength: 1 };
-  const settings = {
-    tiltX: 12,
-    tiltY: 14,
-    shineMax: 0.35,
-    foilMax: 0.08,
-    holoStrength: 0.65,
-    prismStrength: 0.45,
-    prismDensity: 6,
-    lookPreset: "hybrid" as "standard" | "holo" | "parallel" | "hybrid",
+if (card) {
+  const tiltXMax = 14;
+  const tiltYMax = 16;
+  const translateMax = 18;
+  const scaleHover = 1.025;
+
+  const state = {
+    mx: 50,
+    my: 50,
+    posx: 50,
+    posy: 50,
+    rx: 0,
+    ry: 0,
+    tx: 0,
+    ty: 0,
+    s: 1,
+    hyp: 0.5,
   };
+
+  const target = { ...state };
+  let lastPointerMove = performance.now();
 
   const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
 
-  const prismCanvas = document.getElementById("prism-canvas") as HTMLCanvasElement | null;
-  const prismCtx = prismCanvas?.getContext("2d") ?? null;
+  type RarityPreset = {
+    id: string;
+    label: string;
+    rarity: string;
+    supertype: string;
+    subtypes: string;
+    gallery: boolean;
+  };
 
-  const applySettings = () => {
-    const preset = settings.lookPreset;
-    const holoOn = preset === "holo" || preset === "hybrid";
-    const prismOn = preset === "parallel" || preset === "hybrid";
-    const effectiveHolo = holoOn ? 1 : 0;
-    const effectivePrism = prismOn ? Math.max(settings.prismStrength, 1.2) : 0;
+  const rarityPresets: RarityPreset[] = [
+    { id: "rare-holo", label: "Rare Holo", rarity: "rare holo", supertype: "pokemon", subtypes: "basic", gallery: false },
+    { id: "rare-holo-stage", label: "Rare Holo (Stage)", rarity: "rare holo", supertype: "pokemon", subtypes: "stage2", gallery: false },
+    { id: "rare-holo-galaxy", label: "Rare Holo Galaxy", rarity: "rare holo galaxy", supertype: "pokemon", subtypes: "basic", gallery: false },
+    { id: "rare-holo-v", label: "Rare Holo V", rarity: "rare holo v", supertype: "pokemon", subtypes: "v", gallery: false },
+    { id: "rare-holo-vmax", label: "Rare Holo VMAX", rarity: "rare holo vmax", supertype: "pokemon", subtypes: "vmax", gallery: false },
+    { id: "rare-holo-vstar", label: "Rare Holo VSTAR", rarity: "rare holo vstar", supertype: "pokemon", subtypes: "vstar", gallery: false },
+    { id: "rare-ultra", label: "Rare Ultra (Pokémon)", rarity: "rare ultra", supertype: "pokemon", subtypes: "basic", gallery: false },
+    { id: "rare-ultra-supporter", label: "Rare Ultra (Supporter)", rarity: "rare ultra", supertype: "supporter", subtypes: "supporter", gallery: false },
+    { id: "rare-rainbow", label: "Rare Rainbow", rarity: "rare rainbow", supertype: "pokemon", subtypes: "basic", gallery: false },
+    { id: "rare-rainbow-alt", label: "Rare Rainbow Alt", rarity: "rare rainbow alt", supertype: "pokemon", subtypes: "basic", gallery: false },
+    { id: "rare-secret", label: "Rare Secret", rarity: "rare secret", supertype: "pokemon", subtypes: "basic", gallery: false },
+    { id: "radiant", label: "Radiant", rarity: "radiant", supertype: "pokemon", subtypes: "radiant", gallery: false },
+    { id: "gallery", label: "Trainer Gallery", rarity: "rare holo", supertype: "pokemon", subtypes: "basic", gallery: true },
+    { id: "gallery-v", label: "Trainer Gallery V", rarity: "rare holo v", supertype: "pokemon", subtypes: "vmax", gallery: true },
+  ];
 
-    card.style.setProperty("--tilt-x-max", settings.tiltX.toFixed(2));
-    card.style.setProperty("--tilt-y-max", settings.tiltY.toFixed(2));
-    card.style.setProperty("--shine-max", settings.shineMax.toFixed(3));
-    card.style.setProperty("--foil-max", settings.foilMax.toFixed(3));
-    card.style.setProperty("--holo-intensity", effectiveHolo.toString());
-    card.style.setProperty("--holo-strength", settings.holoStrength.toFixed(2));
-    card.style.setProperty("--prism-strength", effectivePrism.toFixed(2));
-    card.style.setProperty("--prism-density", settings.prismDensity.toFixed(1));
+  const settings = {
+    preset: "rare-holo",
+  };
+
+  const applyPreset = (id: string) => {
+    const preset = rarityPresets.find((p) => p.id === id);
+    if (!preset) return;
+    card.dataset.rarity = preset.rarity;
+    card.dataset.supertype = preset.supertype;
+    card.dataset.subtypes = preset.subtypes;
+    card.dataset.gallery = preset.gallery ? "true" : "false";
+  };
+
+  const applyVars = () => {
+    card.style.setProperty("--mx", state.mx.toFixed(2) + "%");
+    card.style.setProperty("--my", state.my.toFixed(2) + "%");
+    card.style.setProperty("--posx", state.posx.toFixed(2) + "%");
+    card.style.setProperty("--posy", state.posy.toFixed(2) + "%");
+    card.style.setProperty("--rx", state.rx.toFixed(3) + "deg");
+    card.style.setProperty("--ry", state.ry.toFixed(3) + "deg");
+    card.style.setProperty("--tx", state.tx.toFixed(2) + "px");
+    card.style.setProperty("--ty", state.ty.toFixed(2) + "px");
+    card.style.setProperty("--s", state.s.toFixed(3));
+    card.style.setProperty("--hyp", state.hyp.toFixed(3));
   };
 
   const handlePointerMove = (event: PointerEvent) => {
+    lastPointerMove = performance.now();
     const vw = Math.max(1, window.innerWidth);
     const vh = Math.max(1, window.innerHeight);
     const x = event.clientX / vw;
     const y = event.clientY / vh;
     const clampedX = Math.max(0, Math.min(1, x));
     const clampedY = Math.max(0, Math.min(1, y));
-    target.ry = (clampedX - 0.5) * settings.tiltY;
-    target.rx = -(clampedY - 0.5) * settings.tiltX;
-    target.mx = clampedX * 100;
-    target.my = clampedY * 100;
-    target.hover = 1;
-
     const dx = clampedX - 0.5;
     const dy = clampedY - 0.5;
-    const angle = Math.atan2(dy, dx);
-    const dist = Math.min(0.65, Math.hypot(dx, dy));
-    target.lightAngle = angle * (180 / Math.PI);
-    target.lightStrength = 1 - dist / 0.65;
+    const hyp = Math.min(1, Math.hypot(dx, dy) * 2);
+
+    target.mx = clampedX * 100;
+    target.my = clampedY * 100;
+    target.posx = clampedX * 100;
+    target.posy = clampedY * 100;
+    target.rx = -(dy * tiltXMax);
+    target.ry = dx * tiltYMax;
+    target.tx = dx * translateMax;
+    target.ty = dy * translateMax;
+    target.s = scaleHover;
+    target.hyp = hyp;
   };
 
   const handlePointerLeave = () => {
+    lastPointerMove = performance.now();
+    target.mx = 50;
+    target.my = 50;
+    target.posx = 50;
+    target.posy = 50;
     target.rx = 0;
     target.ry = 0;
-    target.hover = 0;
+    target.tx = 0;
+    target.ty = 0;
+    target.s = 1;
+    target.hyp = 0.5;
   };
 
-  const resizePrism = () => {
-    if (!prismCanvas || !prismCtx) return;
-    const rect = card.getBoundingClientRect();
-    const dpr = window.devicePixelRatio || 1;
-    prismCanvas.width = Math.round(rect.width * dpr);
-    prismCanvas.height = Math.round(rect.height * dpr);
-    prismCanvas.style.width = `${rect.width}px`;
-    prismCanvas.style.height = `${rect.height}px`;
-    prismCtx.setTransform(1, 0, 0, 1, 0, 0);
-    prismCtx.scale(dpr, dpr);
-  };
-
-  const drawPrism = () => {
-    if (!prismCtx || !prismCanvas) return;
-    const rect = card.getBoundingClientRect();
-    prismCtx.clearRect(0, 0, rect.width, rect.height);
-    const stripeLen = Math.max(50, settings.prismDensity * 10);
-    const stripeWid = Math.max(1.2, settings.prismDensity * 0.25);
-    const lightX = (state.mx / 100) * rect.width;
-    const lightY = (state.my / 100) * rect.height;
-    const maxDist = Math.hypot(rect.width, rect.height) * 0.5;
-    const step = settings.prismDensity * 8;
-
-    for (let y = 0; y < rect.height + step; y += step) {
-      for (let x = 0; x < rect.width + step; x += step) {
-        const cx = x + (step * 0.3);
-        const cy = y + (step * 0.7);
-        const dist = Math.hypot(cx - lightX, cy - lightY);
-        const normalized = 1 - Math.min(dist / maxDist, 1);
-        if (normalized < 0.5) continue;
-        const strength = normalized * state.lightStrength;
-        const alpha = settings.prismStrength * (0.12 + 0.55 * strength) * (0.3 + 0.7 * state.hover);
-        if (alpha <= 0.02) continue;
-
-        prismCtx.save();
-        prismCtx.translate(cx, cy);
-        prismCtx.rotate(-Math.PI * 0.25);
-        const grad = prismCtx.createLinearGradient(0, -stripeLen / 2, 0, stripeLen / 2);
-        grad.addColorStop(0, `rgba(255,255,255,${(alpha * 0.6).toFixed(3)})`);
-        grad.addColorStop(0.35, `rgba(120,220,255,${(alpha * 0.9).toFixed(3)})`);
-        grad.addColorStop(0.65, `rgba(255,180,220,${(alpha * 0.9).toFixed(3)})`);
-        grad.addColorStop(1, `rgba(255,255,255,${(alpha * 0.6).toFixed(3)})`);
-        prismCtx.fillStyle = grad;
-        prismCtx.fillRect(-stripeWid / 2, -stripeLen / 2, stripeWid, stripeLen);
-        prismCtx.restore();
-      }
-    }
+  const idleOrbit = (time: number) => {
+    const t = time * 0.001;
+    const wobble = 0.22;
+    target.ry = Math.sin(t * 0.6) * tiltYMax * 0.24;
+    target.rx = Math.cos(t * 0.5) * tiltXMax * 0.22;
+    target.mx = (Math.sin(t * 0.55) * wobble + 0.5) * 100;
+    target.my = (Math.cos(t * 0.58) * wobble + 0.5) * 100;
+    target.posx = target.mx;
+    target.posy = target.my;
+    target.tx = (target.mx - 50) * 0.36;
+    target.ty = (target.my - 50) * 0.36;
+    target.s = 1.01;
+    const dx = target.mx / 100 - 0.5;
+    const dy = target.my / 100 - 0.5;
+    target.hyp = Math.min(1, Math.hypot(dx, dy) * 2);
   };
 
   const tick = () => {
+    const now = performance.now();
+    if (now - lastPointerMove > 1400) {
+      idleOrbit(now);
+    }
+
+    state.mx = lerp(state.mx, target.mx, 0.16);
+    state.my = lerp(state.my, target.my, 0.16);
+    state.posx = lerp(state.posx, target.posx, 0.15);
+    state.posy = lerp(state.posy, target.posy, 0.15);
     state.rx = lerp(state.rx, target.rx, 0.12);
     state.ry = lerp(state.ry, target.ry, 0.12);
-    state.mx = lerp(state.mx, target.mx, 0.18);
-    state.my = lerp(state.my, target.my, 0.18);
-    state.hover = lerp(state.hover, target.hover, 0.18);
-    state.lightAngle = lerp(state.lightAngle, target.lightAngle, 0.16);
-    state.lightStrength = lerp(state.lightStrength, target.lightStrength, 0.2);
+    state.tx = lerp(state.tx, target.tx, 0.16);
+    state.ty = lerp(state.ty, target.ty, 0.16);
+    state.s = lerp(state.s, target.s, 0.12);
+    state.hyp = lerp(state.hyp, target.hyp, 0.1);
 
-    card.style.setProperty("--rx", state.rx.toFixed(3) + "deg");
-    card.style.setProperty("--ry", state.ry.toFixed(3) + "deg");
-    card.style.setProperty("--mx", state.mx.toFixed(2) + "%");
-    card.style.setProperty("--my", state.my.toFixed(2) + "%");
-    card.style.setProperty("--hover", state.hover.toFixed(3));
-    card.style.setProperty("--light-angle", state.lightAngle.toFixed(2) + "deg");
-    card.style.setProperty("--light-strength", state.lightStrength.toFixed(3));
-
-    drawPrism();
+    applyVars();
     requestAnimationFrame(tick);
   };
 
   window.addEventListener("pointermove", handlePointerMove);
   window.addEventListener("pointerleave", handlePointerLeave);
-  window.addEventListener("resize", resizePrism);
+  applyPreset(settings.preset);
 
-  const pane = new Pane({ title: "Lighting Controls", container: paneHost });
-  pane
-    .addBinding(settings, "tiltX", { min: 4, max: 24, step: 0.5, label: "Tilt X (deg)" })
-    .on("change", applySettings);
-  pane
-    .addBinding(settings, "tiltY", { min: 4, max: 28, step: 0.5, label: "Tilt Y (deg)" })
-    .on("change", applySettings);
-  pane
-    .addBinding(settings, "shineMax", { min: 0.05, max: 0.6, step: 0.01, label: "Shine max" })
-    .on("change", applySettings);
-  pane
-    .addBinding(settings, "foilMax", { min: 0.02, max: 0.18, step: 0.005, label: "Foil max" })
-    .on("change", applySettings);
-  pane
-    .addBinding(settings, "holoStrength", { min: 0.2, max: 1.2, step: 0.05, label: "Holo strength" })
-    .on("change", applySettings);
-  pane
-    .addBinding(settings, "prismStrength", { min: 0.1, max: 1.4, step: 0.05, label: "Prism strength" })
-    .on("change", applySettings);
-  pane
-    .addBinding(settings, "prismDensity", { min: 6, max: 20, step: 0.5, label: "Prism density" })
-    .on("change", applySettings);
-  pane.addBinding(settings, "lookPreset", {
-    label: "Preset",
-    options: {
-      Standard: "standard",
-      Holo: "holo",
-      Parallel: "parallel",
-      Hybrid: "hybrid",
-    },
-  }).on("change", applySettings);
+  if (paneHost) {
+    const pane = new Pane({ title: "Rarity & Motion", container: paneHost });
+    pane
+      .addBinding(settings, "preset", {
+        label: "Rarity",
+        options: Object.fromEntries(rarityPresets.map((p) => [p.label, p.id])),
+      })
+      .on("change", (ev) => {
+        applyPreset(ev.value);
+      });
+  }
 
-  applySettings();
-  resizePrism();
   requestAnimationFrame(tick);
 }
