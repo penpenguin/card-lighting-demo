@@ -71,7 +71,7 @@
 				place-items: center;
 				perspective: 1100px;
 				isolation: isolate;
-				overflow: hidden;
+				overflow: visible;
 			}
 
 			.stage::before {
@@ -85,13 +85,26 @@
 				z-index: 0;
 			}
 
+			.stage::after {
+				content: "";
+				position: absolute;
+				inset: -18%;
+				background:
+					radial-gradient(60% 55% at 50% 45%, rgba(255, 240, 220, 0.08), transparent 70%),
+					radial-gradient(55% 50% at 50% 60%, rgba(120, 170, 255, 0.06), transparent 72%);
+				filter: blur(22px);
+				opacity: 0.85;
+				pointer-events: none;
+				z-index: 0;
+			}
+
 			.card {
 				position: relative;
 				width: 360px;
 				height: 220px;
 				border-radius: 22px;
 				transform-style: preserve-3d;
-				background: radial-gradient(140% 120% at 50% 30%, #1a1f30, #0a0e18 64%);
+				background: #0a0a0a;
 				box-shadow:
 					0 32px 80px rgba(0, 0, 0, 0.72),
 					0 12px 26px rgba(0, 0, 0, 0.55),
@@ -208,7 +221,7 @@
 			}
 
 			.layer-base {
-				background: linear-gradient(145deg, #0b0d15 0%, #11182a 50%, #0a0d16 100%);
+				background: #0a0a0a;
 				transform: translateZ(2px);
 			}
 
@@ -358,6 +371,16 @@
 			}
 
 			/* --- rare holo --- */
+			.card[data-rarity="rare holo"] {
+				--chip-shine-bg:
+					repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0.04) 6px, rgba(0, 0, 0, 0) 7px 16px),
+					linear-gradient(120deg, rgba(255, 130, 220, 0.35), rgba(140, 200, 255, 0.45), rgba(255, 240, 170, 0.4)),
+					radial-gradient(120px 90px at var(--mx) var(--my), rgba(255, 255, 255, 0.65), rgba(255, 255, 255, 0) 70%);
+				--chip-shine-blend: soft-light, soft-light, screen;
+				--chip-shine-filter: brightness(calc((var(--hyp) + 0.7) * 0.6)) contrast(2.2);
+				--chip-shine-size: 220% 220%;
+			}
+
 			.card[data-rarity="rare holo"] .card__shine {
 				clip-path: inset(4.5% 4.5% 4.5% 4.5%);
 				background-image:
@@ -379,6 +402,16 @@
 			}
 
 			/* --- rare holo galaxy --- */
+			.card[data-rarity="rare holo galaxy"] {
+				--chip-shine-bg:
+					radial-gradient(120px 90px at calc(50% - (var(--mx) - 50%) * 2.2) calc(50% - (var(--my) - 50%) * 2.2), rgba(80, 140, 255, 0.4), transparent 70%),
+					radial-gradient(120px 90px at var(--mx) var(--my), rgba(255, 255, 255, 0.4), transparent 70%),
+					repeating-radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.9) 0 1px, transparent 1px 5px);
+				--chip-shine-blend: color-dodge, screen, saturation;
+				--chip-shine-filter: brightness(calc(0.5 + var(--hyp) * 0.35)) saturate(1.3);
+				--chip-shine-size: 200% 200%;
+			}
+
 			.card[data-rarity="rare holo galaxy"] .card__shine {
 				clip-path: inset(4.5% 4.5% 4.5% 4.5%);
 				background-image:
@@ -407,6 +440,16 @@
 			}
 
 			/* --- rare holo v --- */
+			.card[data-rarity*="rare holo v"] {
+				--chip-shine-bg:
+					linear-gradient(90deg, rgba(255, 180, 255, 0.32), rgba(120, 220, 255, 0.34), rgba(255, 210, 150, 0.35)),
+					repeating-linear-gradient(-60deg, rgba(0, 0, 0, 0.12) 0 8px, rgba(255, 255, 255, 0.05) 8px 12px),
+					radial-gradient(120px 90px at var(--mx) var(--my), rgba(255, 255, 255, 0.3), rgba(0, 0, 0, 0));
+				--chip-shine-blend: screen, hard-light, overlay;
+				--chip-shine-filter: brightness(calc(0.55 + var(--hyp) * 0.4)) saturate(1.1);
+				--chip-shine-size: 210% 210%;
+			}
+
 			.card[data-rarity*="rare holo v"] .card__shine {
 				clip-path: inset(6% 6% 6% 6% round 4% 4%);
 				background-image:
@@ -430,6 +473,16 @@
 			}
 
 			/* --- rare holo vmax --- */
+			.card[data-rarity="rare holo vmax"] {
+				--chip-shine-bg:
+					linear-gradient(135deg, rgba(255, 120, 200, 0.35), rgba(120, 220, 255, 0.35), rgba(240, 200, 255, 0.3)),
+					repeating-linear-gradient(60deg, rgba(255, 255, 255, 0.1) 0 6px, rgba(0, 0, 0, 0) 6px 14px),
+					radial-gradient(140px 110px at var(--mx) var(--my), rgba(255, 255, 255, 0.32), transparent 75%);
+				--chip-shine-blend: color-burn, screen, soft-light;
+				--chip-shine-filter: brightness(calc((var(--hyp) * 0.3) + 0.5));
+				--chip-shine-size: 220% 220%;
+			}
+
 			.card[data-rarity="rare holo vmax"] .card__shine {
 				clip-path: inset(6% 6% 6% 6% round 4% 4%);
 				background-image:
@@ -442,6 +495,16 @@
 			}
 
 			/* --- rare holo vstar --- */
+			.card[data-rarity="rare holo vstar"][data-supertype="pokemon"] {
+				--chip-shine-bg:
+					linear-gradient(120deg, rgba(255, 240, 210, 0.38), rgba(150, 210, 255, 0.34), rgba(255, 180, 220, 0.32)),
+					repeating-linear-gradient(-45deg, rgba(0, 0, 0, 0.12) 0 10px, rgba(255, 255, 255, 0.04) 10px 18px),
+					radial-gradient(140px 110px at var(--mx) var(--my), rgba(255, 255, 255, 0.26), transparent 72%);
+				--chip-shine-blend: soft-light, hue, hard-light;
+				--chip-shine-filter: brightness(calc(0.6 + var(--hyp) * 0.35));
+				--chip-shine-size: 210% 210%;
+			}
+
 			.card[data-rarity="rare holo vstar"][data-supertype="pokemon"] .card__shine {
 				clip-path: inset(5% 5% 5% 5% round 4% 4%);
 				background-image:
@@ -461,6 +524,16 @@
 			}
 
 			/* --- rare ultra (pokémon) --- */
+			.card[data-rarity="rare ultra"][data-supertype="pokemon"] {
+				--chip-shine-bg:
+					linear-gradient(110deg, rgba(255, 210, 140, 0.35), rgba(120, 200, 255, 0.4), rgba(255, 120, 200, 0.32)),
+					repeating-linear-gradient(-60deg, rgba(0, 0, 0, 0.14) 0 9px, rgba(255, 255, 255, 0.06) 9px 16px),
+					radial-gradient(140px 110px at var(--mx) var(--my), rgba(255, 255, 255, 0.25), transparent 74%);
+				--chip-shine-blend: exclusion, hue, hard-light;
+				--chip-shine-filter: brightness(calc(0.5 + var(--hyp) * 0.4));
+				--chip-shine-size: 210% 210%;
+			}
+
 			.card[data-rarity="rare ultra"][data-supertype="pokemon"] .card__shine {
 				clip-path: inset(5.2% 5.2% 5.2% 5.2% round 3.5% 3.5%);
 				background-image:
@@ -480,6 +553,16 @@
 			}
 
 			/* --- rare ultra supporter --- */
+			.card[data-rarity="rare ultra"][data-subtypes*="supporter"] {
+				--chip-shine-bg:
+					linear-gradient(115deg, rgba(255, 210, 140, 0.28), rgba(120, 200, 255, 0.38), rgba(255, 120, 200, 0.28)),
+					repeating-linear-gradient(-60deg, rgba(255, 255, 255, 0.08) 0 8px, rgba(0, 0, 0, 0.08) 8px 16px),
+					radial-gradient(140px 110px at var(--mx) var(--my), rgba(255, 255, 255, 0.25), transparent 74%);
+				--chip-shine-blend: difference, hue, hard-light;
+				--chip-shine-filter: brightness(calc(0.55 + var(--hyp) * 0.35));
+				--chip-shine-size: 210% 210%;
+			}
+
 			.card[data-rarity="rare ultra"][data-subtypes*="supporter"] .card__shine {
 				clip-path: inset(5.2% 5.2% 5.2% 5.2% round 3.5% 3.5%);
 				background-image:
@@ -498,6 +581,16 @@
 			}
 
 			/* --- rare rainbow --- */
+			.card[data-rarity^="rare rainbow"] {
+				--chip-shine-bg:
+					linear-gradient(55deg, rgba(255, 180, 255, 0.35), rgba(120, 220, 255, 0.35), rgba(255, 230, 160, 0.34)),
+					repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.08) 0 6px, rgba(0, 0, 0, 0) 6px 14px),
+					radial-gradient(140px 110px at var(--mx) calc(var(--my) * 1.5), rgba(255, 255, 255, 0.22), transparent 78%);
+				--chip-shine-blend: color-burn, soft-light, screen;
+				--chip-shine-filter: brightness(calc(0.6 + var(--hyp) * 0.4));
+				--chip-shine-size: 220% 220%;
+			}
+
 			.card[data-rarity^="rare rainbow"] .card__shine {
 				clip-path: inset(5% 5% 5% 5% round 3.5% 3.5%);
 				background-image:
@@ -524,6 +617,16 @@
 			}
 
 			/* --- rare secret --- */
+			.card[data-rarity="rare secret"] {
+				--chip-shine-bg:
+					linear-gradient(140deg, rgba(255, 210, 140, 0.32), rgba(200, 160, 80, 0.4), rgba(255, 230, 160, 0.32)),
+					repeating-linear-gradient(45deg, rgba(0, 0, 0, 0.2) 0 6px, rgba(255, 255, 255, 0.08) 6px 12px),
+					radial-gradient(140px 110px at var(--mx) var(--my), rgba(255, 255, 255, 0.24), transparent 76%);
+				--chip-shine-blend: color-burn, darken, screen;
+				--chip-shine-filter: brightness(calc(0.6 + var(--hyp) * 0.45));
+				--chip-shine-size: 220% 220%;
+			}
+
 			.card[data-rarity="rare secret"] .card__shine {
 				clip-path: inset(5% 5% 5% 5% round 3.5% 3.5%);
 				background-image:
@@ -543,6 +646,16 @@
 			}
 
 			/* --- radiant --- */
+			.card[data-rarity*="radiant"] {
+				--chip-shine-bg:
+					linear-gradient(55deg, rgba(255, 180, 240, 0.5), rgba(120, 220, 255, 0.5), rgba(255, 230, 160, 0.45)),
+					repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.12) 0 6px, rgba(0, 0, 0, 0) 6px 12px),
+					repeating-linear-gradient(-45deg, rgba(0, 0, 0, 0.12) 0 8px, rgba(255, 255, 255, 0.06) 8px 16px);
+				--chip-shine-blend: color-dodge, color-dodge, screen;
+				--chip-shine-filter: contrast(3) saturate(1.2);
+				--chip-shine-size: 240% 240%;
+			}
+
 			.card[data-rarity*="radiant"] .card__shine {
 				clip-path: inset(2.8% 4% round 2.55% / 1.5%);
 				opacity: calc(((var(--hyp) * 0.7) + 0.2) * 1);
@@ -570,6 +683,16 @@
 			}
 
 			/* --- トレーナーギャラリー --- */
+			.card[data-rarity="rare holo"][data-gallery="true"] {
+				--chip-shine-bg:
+					linear-gradient(115deg, rgba(255, 220, 255, 0.75), rgba(140, 200, 255, 0.65), rgba(255, 210, 160, 0.6)),
+					repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.08) 0 10px, rgba(0, 0, 0, 0) 10px 18px),
+					radial-gradient(140px 110px at var(--mx) var(--my), rgba(255, 255, 255, 0.35), transparent 70%);
+				--chip-shine-blend: color-dodge, screen, screen;
+				--chip-shine-filter: brightness(calc(0.6 + var(--hyp) * 0.45));
+				--chip-shine-size: 210% 210%;
+			}
+
 			.card[data-rarity="rare holo"][data-gallery="true"] .card__shine {
 				clip-path: inset(2.8% 4% round 2.55% / 1.5%);
 				background-image:
@@ -585,6 +708,16 @@
 			}
 
 			/* --- トレーナーギャラリーV --- */
+			.card[data-rarity="rare holo v"][data-gallery="true"] {
+				--chip-shine-bg:
+					repeating-linear-gradient(-45deg, rgba(0, 0, 0, 0.12) 0 8px, rgba(255, 255, 255, 0.05) 8px 16px),
+					radial-gradient(160px 120px at var(--mx) var(--my), rgba(255, 255, 255, 0.24), transparent 72%),
+					linear-gradient(130deg, rgba(255, 140, 220, 0.32), rgba(120, 220, 255, 0.28));
+				--chip-shine-blend: hue, hard-light, exclusion;
+				--chip-shine-filter: brightness(calc(0.55 + var(--hyp) * 0.5));
+				--chip-shine-size: 200% 200%;
+			}
+
 			.card[data-rarity="rare holo v"][data-gallery="true"] .card__shine {
 				clip-path: inset(4% 4% 4% 4% round 3% 3%);
 				--img: url("illusion.webp");
@@ -617,7 +750,7 @@
 				padding: 18px 18px 16px;
 				display: grid;
 				grid-template-rows: auto 1fr auto;
-				gap: 14px;
+				gap: 10px;
 				transform: translateZ(14px);
 				color: #e8ebf5;
 				text-shadow: 0 1px 1px rgba(0, 0, 0, 0.55);
@@ -645,19 +778,60 @@
 				width: 46px;
 				height: 34px;
 				border-radius: 8px;
-				background: linear-gradient(135deg, #1c1f2b, #0f121b);
-				box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.22), inset 0 -2px 3px rgba(0, 0, 0, 0.55);
+				background: linear-gradient(135deg, #f2d58a 0%, #b8872f 45%, #f7e3a8 100%);
+				border: 1px solid rgba(255, 232, 176, 0.6);
+				box-shadow:
+					inset 0 2px 3px rgba(255, 255, 255, 0.4),
+					inset 0 -3px 6px rgba(70, 40, 0, 0.45),
+					0 2px 4px rgba(0, 0, 0, 0.45);
 				position: relative;
+				overflow: hidden;
+				isolation: isolate;
+			}
+
+			.chip__shine {
+				position: absolute;
+				inset: -18%;
+				border-radius: inherit;
+				background:
+					var(--chip-shine-bg,
+						radial-gradient(120% 120% at var(--mx) var(--my), rgba(255, 255, 255, 0.45), transparent 62%),
+						conic-gradient(from 200deg at 50% 50%, rgba(255, 220, 150, 0.35), rgba(120, 200, 255, 0.32), rgba(255, 150, 220, 0.3), rgba(255, 220, 150, 0.35)),
+						repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.12) 0 1px, transparent 1px 4px)
+					);
+				background-blend-mode: var(--chip-shine-blend, screen);
+				background-position: var(--chip-shine-pos, var(--posx) var(--posy));
+				background-size: var(--chip-shine-size, 180% 180%);
+				opacity: 0.78;
+				filter: blur(0.2px) saturate(1.2) var(--chip-shine-filter, brightness(1));
+				pointer-events: none;
+				z-index: 1;
 			}
 
 			.chip::before,
 			.chip::after {
 				content: "";
 				position: absolute;
-				inset: 7px 8px;
 				border-radius: 4px;
-				background: linear-gradient(90deg, rgba(255, 215, 170, 0.65), rgba(120, 150, 180, 0.25));
-				mask: linear-gradient(90deg, #000 0 30%, transparent 30% 70%, #000 70% 100%);
+				z-index: 2;
+			}
+
+			.chip::before {
+				inset: 6px 7px;
+				background:
+					linear-gradient(135deg, rgba(255, 255, 255, 0.35), rgba(0, 0, 0, 0.28)),
+					repeating-linear-gradient(90deg, rgba(70, 45, 10, 0.4) 0 2px, transparent 2px 6px);
+				box-shadow: inset 0 0 0 1px rgba(60, 40, 10, 0.45);
+			}
+
+			.chip::after {
+				inset: 11px 14px;
+				border-radius: 3px;
+				background:
+					linear-gradient(120deg, rgba(255, 255, 255, 0.28), rgba(0, 0, 0, 0.3)),
+					repeating-linear-gradient(0deg, rgba(60, 40, 10, 0.45) 0 1px, transparent 1px 5px);
+				box-shadow: inset 0 0 0 1px rgba(60, 40, 10, 0.4);
+				opacity: 0.9;
 			}
 
 			.badge {
@@ -679,16 +853,10 @@
 				font-size: 20px;
 				letter-spacing: 0.18em;
 				font-weight: 700;
-				padding: 14px 12px;
+				padding: 10px 12px;
 				border-radius: 12px;
-				background:
-					linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0)),
-					radial-gradient(120% 120% at 50% 30%, rgba(255, 255, 255, 0.08), transparent 60%),
-					repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.04) 0 2px, transparent 2px 7px);
-				box-shadow:
-					inset 0 0 0 1px rgba(255, 255, 255, 0.04),
-					inset 0 10px 18px rgba(255, 255, 255, 0.06),
-					inset 0 -10px 18px rgba(0, 0, 0, 0.25);
+				background: none;
+				box-shadow: none;
 				align-items: center;
 				justify-items: center;
 			}
@@ -732,6 +900,26 @@
 				font-size: 10px;
 				color: rgba(233, 236, 242, 0.55);
 				letter-spacing: 0.08em;
+			}
+
+			.card[data-rarity]::before,
+			.card[data-rarity]::after,
+			.card[data-rarity] .card__frame,
+			.card[data-rarity] .card__cut,
+			.card[data-rarity] .layer-foil,
+			.card[data-rarity] .layer-holo,
+			.card[data-rarity] .layer-prism,
+			.card[data-rarity] .layer-shine,
+			.card[data-rarity] .layer-rim,
+			.card[data-rarity] .card__shine,
+			.card[data-rarity] .card__glare {
+				opacity: 0;
+			}
+
+			.card[data-rarity] .layer-texture,
+			.card[data-rarity] .layer-coat {
+				opacity: 0;
+				mix-blend-mode: normal;
 			}
 
 			@media (prefers-reduced-motion: reduce) {
@@ -789,7 +977,9 @@
 							<div class="header">
 								<div class="logo">Card Lighting</div>
 								<div class="badge">Premium</div>
-								<div class="chip" aria-hidden="true"></div>
+								<div class="chip" aria-hidden="true">
+									<span class="chip__shine" aria-hidden="true"></span>
+								</div>
 							</div>
 							<div class="number" aria-label="Card number">
 								<span>5248</span>
@@ -802,8 +992,6 @@
 								<div class="expiry">VALID<br />12/28</div>
 								<div class="network">VISTA</div>
 							</div>
-							<div class="subtitle">Specular study</div>
-							<div class="meta">CSS × Light × Tilt</div>
 						</div>
 					</div>
 				</div>

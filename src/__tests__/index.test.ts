@@ -8,7 +8,7 @@ describe("ポケモンカード風ホロ表現", () => {
   it("カード本体は元のデモカードをそのまま描画する（iframeを使わない）", () => {
     expect(page).not.toContain("<iframe");
     expect(page).toContain("Card Lighting");
-    expect(page).toContain("Specular study");
+    expect(page).not.toContain("Specular study");
   });
 
   it("カード要素にdata-rarity等のデータ属性でレアリティを持たせる", () => {
@@ -79,5 +79,63 @@ describe("ポケモンカード風ホロ表現", () => {
     expect(script).toContain('window.addEventListener("pointermove"');
     expect(script).toContain('window.addEventListener("pointerleave"');
     expect(script).toContain("requestAnimationFrame");
+  });
+
+  it("ICチップ部分だけに透けるエフェクトを集約する", () => {
+    expect(page).toContain('class="chip__shine"');
+    expect(page).toContain(".chip__shine");
+    expect(page).toContain("radial-gradient(120% 120% at var(--mx) var(--my)");
+    expect(page).toContain(".card__shine");
+    expect(page).toContain("opacity: 0;");
+  });
+
+  it("カード本体をマッドブラックに寄せる", () => {
+    expect(page).toContain("background: #0a0a0a");
+  });
+
+  it("カードの影が見切れないようにステージを開放する", () => {
+    expect(page).toContain(".stage");
+    expect(page).toContain("overflow: visible");
+  });
+
+  it("カード番号の背景フレームを外す", () => {
+    expect(page).toContain(".number");
+    expect(page).toContain("background: none");
+    expect(page).toContain("box-shadow: none");
+  });
+
+  it("ICチップの金属感を強める", () => {
+    expect(page).toContain(".chip");
+    expect(page).toContain("linear-gradient(135deg, #f2d58a");
+    expect(page).toContain("border: 1px solid rgba(255, 232, 176");
+  });
+
+  it("ICチップの光沢がプリセットに追従する", () => {
+    expect(page).toContain("var(--chip-shine-bg");
+    expect(page).toContain("--chip-shine-bg");
+    expect(page).toContain('data-rarity="rare holo"');
+    expect(page).toContain('data-rarity="rare holo galaxy"');
+  });
+
+  it("背景をわずかに照らしてカードが浮かぶように見せる", () => {
+    expect(page).toContain(".stage::after");
+    expect(page).toContain("rgba(255, 240, 220, 0.08)");
+  });
+
+  it("メタ文言が見切れないよう余白を詰める", () => {
+    expect(page).toContain(".content");
+    expect(page).toContain("gap: 10px");
+    expect(page).toContain(".number");
+    expect(page).toContain("padding: 10px 12px");
+  });
+
+  it("不要なサブタイトルとメタ情報を表示しない", () => {
+    expect(page).not.toContain("Specular study");
+    expect(page).not.toContain("CSS × Light × Tilt");
+  });
+
+  it("radiantでもカード本体のきらきらを抑制する", () => {
+    expect(page).toContain(".card[data-rarity] .card__shine");
+    expect(page).toContain("opacity: 0;");
   });
 });
