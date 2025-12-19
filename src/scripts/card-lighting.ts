@@ -40,24 +40,24 @@ if (card) {
   };
 
   const rarityPresets: RarityPreset[] = [
-    { id: "rare-holo", label: "Rare Holo", rarity: "rare holo", supertype: "pokemon", subtypes: "basic", gallery: false },
-    { id: "rare-holo-stage", label: "Rare Holo (Stage)", rarity: "rare holo", supertype: "pokemon", subtypes: "stage2", gallery: false },
-    { id: "rare-holo-galaxy", label: "Rare Holo Galaxy", rarity: "rare holo galaxy", supertype: "pokemon", subtypes: "basic", gallery: false },
-    { id: "rare-holo-v", label: "Rare Holo V", rarity: "rare holo v", supertype: "pokemon", subtypes: "v", gallery: false },
-    { id: "rare-holo-vmax", label: "Rare Holo VMAX", rarity: "rare holo vmax", supertype: "pokemon", subtypes: "vmax", gallery: false },
-    { id: "rare-holo-vstar", label: "Rare Holo VSTAR", rarity: "rare holo vstar", supertype: "pokemon", subtypes: "vstar", gallery: false },
-    { id: "rare-ultra", label: "Rare Ultra (Pokémon)", rarity: "rare ultra", supertype: "pokemon", subtypes: "basic", gallery: false },
-    { id: "rare-ultra-supporter", label: "Rare Ultra (Supporter)", rarity: "rare ultra", supertype: "supporter", subtypes: "supporter", gallery: false },
-    { id: "rare-rainbow", label: "Rare Rainbow", rarity: "rare rainbow", supertype: "pokemon", subtypes: "basic", gallery: false },
-    { id: "rare-rainbow-alt", label: "Rare Rainbow Alt", rarity: "rare rainbow alt", supertype: "pokemon", subtypes: "basic", gallery: false },
-    { id: "rare-secret", label: "Rare Secret", rarity: "rare secret", supertype: "pokemon", subtypes: "basic", gallery: false },
-    { id: "radiant", label: "Radiant", rarity: "radiant", supertype: "pokemon", subtypes: "radiant", gallery: false },
-    { id: "gallery", label: "Trainer Gallery", rarity: "rare holo", supertype: "pokemon", subtypes: "basic", gallery: true },
-    { id: "gallery-v", label: "Trainer Gallery V", rarity: "rare holo v", supertype: "pokemon", subtypes: "vmax", gallery: true },
+    { id: "rare-holo", label: "Holo Classic", rarity: "rare holo", supertype: "pokemon", subtypes: "basic", gallery: false },
+    { id: "rare-holo-stage", label: "Holo Classic (Mask A)", rarity: "rare holo", supertype: "pokemon", subtypes: "stage2", gallery: false },
+    { id: "rare-holo-galaxy", label: "Galaxy Spark", rarity: "rare holo galaxy", supertype: "pokemon", subtypes: "basic", gallery: false },
+    { id: "rare-holo-v", label: "Prism Holo", rarity: "rare holo v", supertype: "pokemon", subtypes: "v", gallery: false },
+    { id: "rare-holo-vmax", label: "Prism Holo Max", rarity: "rare holo vmax", supertype: "pokemon", subtypes: "vmax", gallery: false },
+    { id: "rare-holo-vstar", label: "Prism Holo Star", rarity: "rare holo vstar", supertype: "pokemon", subtypes: "vstar", gallery: false },
+    { id: "rare-ultra", label: "Ultra Gloss", rarity: "rare ultra", supertype: "pokemon", subtypes: "basic", gallery: false },
+    { id: "rare-ultra-supporter", label: "Ultra Gloss (Wide)", rarity: "rare ultra", supertype: "supporter", subtypes: "supporter", gallery: false },
+    { id: "rare-rainbow", label: "Spectrum", rarity: "rare rainbow", supertype: "pokemon", subtypes: "basic", gallery: false },
+    { id: "rare-rainbow-alt", label: "Spectrum Alt", rarity: "rare rainbow alt", supertype: "pokemon", subtypes: "basic", gallery: false },
+    { id: "rare-secret", label: "Gilded", rarity: "rare secret", supertype: "pokemon", subtypes: "basic", gallery: false },
+    { id: "radiant", label: "Radiant Burst", rarity: "radiant", supertype: "pokemon", subtypes: "radiant", gallery: false },
+    { id: "gallery", label: "Gallery Finish", rarity: "rare holo", supertype: "pokemon", subtypes: "basic", gallery: true },
+    { id: "gallery-v", label: "Gallery Finish (Deep)", rarity: "rare holo v", supertype: "pokemon", subtypes: "vmax", gallery: true },
   ];
 
   const settings = {
-    preset: "rare-holo",
+    preset: "rare-secret",
     cardNumber: "5248 1903 7741 0826",
     cardHolder: "ALEXANDER NOVA",
     cardExpiry: "12/28",
@@ -188,10 +188,10 @@ if (card) {
   applyCardDetails();
 
   if (paneHost) {
-    const pane = new Pane({ title: "Rarity & Motion", container: paneHost });
+    const pane = new Pane({ title: "Effects & Motion", container: paneHost });
     pane
       .addBinding(settings, "preset", {
-        label: "Rarity",
+        label: "Effect",
         options: Object.fromEntries(rarityPresets.map((p) => [p.label, p.id])),
       })
       .on("change", (ev) => {

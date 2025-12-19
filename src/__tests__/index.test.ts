@@ -41,6 +41,53 @@ describe("ポケモンカード風ホロ表現", () => {
     expect(script).toContain('addBinding(settings, "preset"');
   });
 
+  it("デフォルトのエフェクトはGildedにする", () => {
+    expect(script).toContain('preset: "rare-secret"');
+  });
+
+  it("レアリティ名をエフェクト名に置き換える", () => {
+    expect(script).toContain('title: "Effects & Motion"');
+    expect(script).toContain('label: "Effect"');
+
+    [
+      "Holo Classic",
+      "Holo Classic (Mask A)",
+      "Galaxy Spark",
+      "Prism Holo",
+      "Prism Holo Max",
+      "Prism Holo Star",
+      "Ultra Gloss",
+      "Ultra Gloss (Wide)",
+      "Spectrum",
+      "Spectrum Alt",
+      "Gilded",
+      "Radiant Burst",
+      "Gallery Finish",
+      "Gallery Finish (Deep)",
+    ].forEach((label) => {
+      expect(script).toContain(`"${label}"`);
+    });
+
+    [
+      "Rare Holo",
+      "Rare Holo (Stage)",
+      "Rare Holo Galaxy",
+      "Rare Holo V",
+      "Rare Holo VMAX",
+      "Rare Holo VSTAR",
+      "Rare Ultra (Pokémon)",
+      "Rare Ultra (Supporter)",
+      "Rare Rainbow",
+      "Rare Rainbow Alt",
+      "Rare Secret",
+      "Radiant",
+      "Trainer Gallery",
+      "Trainer Gallery V",
+    ].forEach((label) => {
+      expect(script).not.toContain(`"${label}"`);
+    });
+  });
+
   it("カード情報をTweakpaneから変更できる", () => {
     expect(script).toContain('addFolder({ title: "Card Details"');
     expect(script).toContain('addBinding(settings, "cardNumber"');
@@ -203,13 +250,39 @@ describe("ポケモンカード風ホロ表現", () => {
   it("カードの縁が光に追従して輝く", () => {
     expect(page).toContain(".layer-rim");
     expect(page).toContain("var(--mx) var(--my)");
-    expect(page).toContain("opacity: calc(0.24 + 0.6 * var(--hyp))");
+    expect(page).toContain("opacity: calc(var(--rim-glow-opacity, 0.24) + 0.6 * var(--hyp))");
     expect(page).toContain("padding: 1px");
     expect(page).toContain("radial-gradient(90% 90% at var(--mx) var(--my)");
     expect(page).toContain("mask-composite: exclude");
     expect(page).toContain("box-shadow: none");
     expect(page).toContain("filter: none");
     expect(page).toContain("layer-rim {\n\t\t\t\tinset: 0;\n\t\t\t\tborder-radius: var(--card-radius);\n\t\t\t\tbackground: radial-gradient");
+  });
+
+  it("レアリティに応じて縁の光の色味が変わる", () => {
+    expect(page).toContain("--rim-glow-color-1");
+    expect(page).toContain("--rim-glow-color-2");
+    expect(page).toContain("--rim-glow-color-3");
+    expect(page).toContain("--rim-glow-opacity");
+
+    const rimBlocks = [
+      String.raw`\[data-rarity="rare holo"\][^}]*--rim-glow-color-1`,
+      String.raw`\[data-rarity="rare holo galaxy"\][^}]*--rim-glow-color-1`,
+      String.raw`\[data-rarity\*="rare holo v"\][^}]*--rim-glow-color-1`,
+      String.raw`\[data-rarity="rare holo vmax"\][^}]*--rim-glow-color-1`,
+      String.raw`\[data-rarity="rare holo vstar"\][^}]*--rim-glow-color-1`,
+      String.raw`\[data-rarity="rare ultra"\]\[data-supertype="pokemon"\][^}]*--rim-glow-color-1`,
+      String.raw`\[data-rarity="rare ultra"\]\[data-subtypes\*="supporter"\][^}]*--rim-glow-color-1`,
+      String.raw`\[data-rarity\^="rare rainbow"\][^}]*--rim-glow-color-1`,
+      String.raw`\[data-rarity="rare secret"\][^}]*--rim-glow-color-1`,
+      String.raw`\[data-rarity\*="radiant"\][^}]*--rim-glow-color-1`,
+      String.raw`\[data-rarity="rare holo"\]\[data-gallery="true"\][^}]*--rim-glow-color-1`,
+      String.raw`\[data-rarity="rare holo v"\]\[data-gallery="true"\][^}]*--rim-glow-color-1`,
+    ];
+
+    rimBlocks.forEach((pattern) => {
+      expect(page).toMatch(new RegExp(pattern));
+    });
   });
 
   it("カードの縁の丸みを少し強める", () => {
