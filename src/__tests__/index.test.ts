@@ -19,8 +19,8 @@ describe("ポケモンカード風ホロ表現", () => {
     expect(page).toContain("data-supertype");
   });
 
-  it("ホロとグレア用のオーバーレイとCSS変数の受け皿がある", () => {
-    ["card__shine", "card__glare", "card__translater", "card__rotator"].forEach((cls) => {
+  it("トランスフォーム用のラッパーとCSS変数の受け皿がある", () => {
+    ["card__translater", "card__rotator"].forEach((cls) => {
       expect(page).toContain(cls);
     });
 
@@ -28,8 +28,8 @@ describe("ポケモンカード風ホロ表現", () => {
     vars.forEach((v) => expect(page).toContain(v));
   });
 
-  it("元のレイヤー構造（base/texture/shine/foil/holo/rim/prismなど）が残っている", () => {
-    ["layer-base", "layer-texture", "layer-shine", "layer-foil", "layer-holo", "layer-rim", "layer-prism", "layer-shadow"].forEach((cls) => {
+  it("カードの基礎レイヤーだけ残す", () => {
+    ["layer-base", "layer-rim", "layer-shadow"].forEach((cls) => {
       expect(page).toContain(cls);
     });
   });
@@ -59,7 +59,6 @@ describe("ポケモンカード風ホロ表現", () => {
 
     [
       "Holo Classic",
-      "Holo Classic (Mask A)",
       "Galaxy Spark",
       "Prism Holo",
       "Prism Holo Max",
@@ -67,7 +66,6 @@ describe("ポケモンカード風ホロ表現", () => {
       "Ultra Gloss",
       "Ultra Gloss (Wide)",
       "Spectrum",
-      "Spectrum Alt",
       "Gilded",
       "Radiant Burst",
       "Gallery Finish",
@@ -78,7 +76,6 @@ describe("ポケモンカード風ホロ表現", () => {
 
     [
       "Rare Holo",
-      "Rare Holo (Stage)",
       "Rare Holo Galaxy",
       "Rare Holo V",
       "Rare Holo VMAX",
@@ -86,7 +83,6 @@ describe("ポケモンカード風ホロ表現", () => {
       "Rare Ultra (Pokémon)",
       "Rare Ultra (Supporter)",
       "Rare Rainbow",
-      "Rare Rainbow Alt",
       "Rare Secret",
       "Radiant",
       "Trainer Gallery",
@@ -106,36 +102,28 @@ describe("ポケモンカード風ホロ表現", () => {
     expect(page).toContain('class="expiry__value"');
   });
 
-  it("各レアリティのCSSをdata-rarityセレクタで切り替える", () => {
+  it("各エフェクトのCSSをdata-rarityセレクタで切り替える", () => {
     const selectors = [
-      '[data-rarity="rare holo"] .card__shine',
-      '[data-rarity="rare holo galaxy"] .card__shine',
-      '[data-rarity="rare holo galaxy"] .card__glare',
-      '[data-rarity*="rare holo v"] .card__shine',
-      '[data-rarity="rare holo vmax"] .card__shine',
-      '[data-rarity="rare holo vstar"][data-supertype="pokemon"] .card__shine',
-      '[data-rarity="rare ultra"][data-supertype="pokemon"] .card__shine',
-      '[data-rarity="rare ultra"][data-subtypes*="supporter"] .card__shine',
-      '[data-rarity^="rare rainbow"] .card__shine',
-      '[data-rarity="rare rainbow alt"] .card__shine',
-      '[data-rarity="rare secret"] .card__shine',
-      '[data-rarity*="radiant"] .card__shine',
-      '[data-rarity="rare holo"][data-gallery="true"] .card__shine',
-      '[data-rarity="rare holo v"][data-gallery="true"] .card__shine'
+      '[data-rarity="rare holo"] {',
+      '[data-rarity="rare holo galaxy"] {',
+      '[data-rarity*="rare holo v"] {',
+      '[data-rarity="rare holo vmax"] {',
+      '[data-rarity="rare holo vstar"][data-supertype="pokemon"] {',
+      '[data-rarity="rare ultra"][data-supertype="pokemon"] {',
+      '[data-rarity="rare ultra"][data-subtypes*="supporter"] {',
+      '[data-rarity^="rare rainbow"] {',
+      '[data-rarity="rare secret"] {',
+      '[data-rarity*="radiant"] {',
+      '[data-rarity="rare holo"][data-gallery="true"] {',
+      '[data-rarity="rare holo v"][data-gallery="true"] {'
     ];
 
     selectors.forEach((sel) => expect(page).toContain(sel));
   });
 
-  it("ステージやサポーター用のclip-pathやギャラリー条件が含まれる", () => {
-    expect(page).toContain('[data-subtypes^="stage"]');
-    expect(page).toContain('[data-subtypes^="supporter"]');
+  it("ギャラリーとサポーター用の分岐が含まれる", () => {
+    expect(page).toContain('[data-subtypes*="supporter"]');
     expect(page).toContain('[data-gallery="true"]');
-  });
-
-  it("クレジットカード全面に近いホロ・グレア範囲を持つ", () => {
-    expect(page).toContain('clip-path: inset(4.5% 4.5% 4.5% 4.5%)');
-    expect(page).toContain("radial-gradient(320px 240px at var(--mx) var(--my)");
   });
 
   it("JSでポインター追従用CSS変数と距離係数--hypを更新する", () => {
@@ -150,18 +138,10 @@ describe("ポケモンカード風ホロ表現", () => {
     expect(page).toContain('class="chip__shine"');
     expect(page).toContain(".chip__shine");
     expect(page).toContain("radial-gradient(120% 120% at var(--mx) var(--my)");
-    expect(page).toContain(".card__shine");
-    expect(page).toContain("display: none");
   });
 
   it("カード本体をマッドブラックに寄せる", () => {
     expect(page).toContain("background: #0a0a0a");
-  });
-
-  it("カード本体の光を抑えて縁だけに寄せる", () => {
-    expect(page).toContain(".layer-matte");
-    expect(page).toContain("layer-matte");
-    expect(page).toContain(".layer-matte { opacity: 0; }");
   });
 
   it("カードの影が見切れないようにステージを開放する", () => {
@@ -236,11 +216,6 @@ describe("ポケモンカード風ホロ表現", () => {
     expect(page).not.toContain(".network");
   });
 
-  it("radiantでもカード本体のきらきらを抑制する", () => {
-    expect(page).toContain(".card[data-rarity] .card__shine");
-    expect(page).toContain("display: none");
-  });
-
   it("カード番号にもキラの影響を乗せる", () => {
     expect(page).toContain(".number span::after");
     expect(page).toContain("content: attr(data-digit)");
@@ -300,6 +275,25 @@ describe("ポケモンカード風ホロ表現", () => {
   it("カード角の外側が黒くならないようレイヤーに丸みを継承する", () => {
     expect(page).toContain(".card__rotator {");
     expect(page).toContain("card__rotator {\n\t\t\t\tposition: absolute;\n\t\t\t\tinset: 0;\n\t\t\t\tborder-radius: var(--card-radius);");
+  });
+
+  it("不要なホロ系レイヤーと装飾を削除する", () => {
+    [
+      "card__shine",
+      "card__glare",
+      "card__frame",
+      "card__cut",
+      "layer-matte",
+      "layer-coat",
+      "layer-texture",
+      "layer-foil",
+      "layer-holo",
+      "layer-prism",
+      "layer-shine",
+      "prism-canvas",
+    ].forEach((name) => {
+      expect(page).not.toContain(name);
+    });
   });
 
 });

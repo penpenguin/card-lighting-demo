@@ -41,7 +41,6 @@ if (card) {
 
   const rarityPresets: RarityPreset[] = [
     { id: "rare-holo", label: "Holo Classic", rarity: "rare holo", supertype: "pokemon", subtypes: "basic", gallery: false },
-    { id: "rare-holo-stage", label: "Holo Classic (Mask A)", rarity: "rare holo", supertype: "pokemon", subtypes: "stage2", gallery: false },
     { id: "rare-holo-galaxy", label: "Galaxy Spark", rarity: "rare holo galaxy", supertype: "pokemon", subtypes: "basic", gallery: false },
     { id: "rare-holo-v", label: "Prism Holo", rarity: "rare holo v", supertype: "pokemon", subtypes: "v", gallery: false },
     { id: "rare-holo-vmax", label: "Prism Holo Max", rarity: "rare holo vmax", supertype: "pokemon", subtypes: "vmax", gallery: false },
@@ -49,7 +48,6 @@ if (card) {
     { id: "rare-ultra", label: "Ultra Gloss", rarity: "rare ultra", supertype: "pokemon", subtypes: "basic", gallery: false },
     { id: "rare-ultra-supporter", label: "Ultra Gloss (Wide)", rarity: "rare ultra", supertype: "supporter", subtypes: "supporter", gallery: false },
     { id: "rare-rainbow", label: "Spectrum", rarity: "rare rainbow", supertype: "pokemon", subtypes: "basic", gallery: false },
-    { id: "rare-rainbow-alt", label: "Spectrum Alt", rarity: "rare rainbow alt", supertype: "pokemon", subtypes: "basic", gallery: false },
     { id: "rare-secret", label: "Gilded", rarity: "rare secret", supertype: "pokemon", subtypes: "basic", gallery: false },
     { id: "radiant", label: "Radiant Burst", rarity: "radiant", supertype: "pokemon", subtypes: "radiant", gallery: false },
     { id: "gallery", label: "Gallery Finish", rarity: "rare holo", supertype: "pokemon", subtypes: "basic", gallery: true },
