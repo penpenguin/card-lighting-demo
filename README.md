@@ -1,43 +1,45 @@
-# Astro Starter Kit: Minimal
+# Card Lighting Demo
+
+カード表面のホロ表現とライト追従の立体感を、単一ページで再現するデモです。
+Astro + TypeScript で構成し、Tweakpane からカードのエフェクトと情報を切り替えられます。
+
+## 特徴
+
+- ポインター追従による傾き・ライトの変化
+- レアリティごとのホロ/縁の表現プリセット
+- カード番号・名義・期限のライブ編集（Tweakpane）
+- GitHub Pages 配信を想定した base/site 設定
+
+## 主要ファイル
+
+- `src/pages/index.astro`：カードのマークアップとスタイル
+- `src/scripts/card-lighting.ts`：ポインター追従と Tweakpane 設定
+- `src/__tests__/index.test.ts`：構成の回帰テスト（Vitest）
+
+## セットアップ
 
 ```sh
-npm create astro@latest -- --template minimal
+npm install
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+## 開発コマンド
 
-## 🚀 Project Structure
+| Command         | Action                                      |
+| :-------------- | :------------------------------------------ |
+| `npm run dev`   | 開発サーバーを起動（`localhost:4321`）      |
+| `npm run build` | 本番ビルド（`./dist/`）                     |
+| `npm run preview` | ビルド結果をローカルで確認                |
+| `npm test`      | Vitest のテストを実行                       |
+| `npm run check` | Astro の型/構文チェック                     |
 
-Inside of your Astro project, you'll see the following folders and files:
+## GitHub Pages 配信
 
-```text
-/
-├── public/
-├── src/
-│   └── pages/
-│       └── index.astro
-└── package.json
+GitHub Pages 配下ではルートが `/<repo>` になるため、`base` と `site` を環境変数で指定します。
+
+例（`https://<user>.github.io/<repo>/` で配信する場合）:
+
+```sh
+BASE_PATH=/<repo> SITE_URL=https://<user>.github.io npm run build
 ```
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
-
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
-
-Any static assets, like images, can be placed in the `public/` directory.
-
-## 🧞 Commands
-
-All commands are run from the root of the project, from a terminal:
-
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+`src/pages/index.astro` では `import ... from "../scripts/card-lighting.ts?url"` でスクリプトのパスを解決しています。

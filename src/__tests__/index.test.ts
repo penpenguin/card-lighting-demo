@@ -49,6 +49,12 @@ describe("ポケモンカード風ホロ表現", () => {
     expect(astroConfig).toContain("site:");
   });
 
+  it("GitHub Pages配下でも読み込めるようにスクリプトのパスを解決する", () => {
+    expect(page).toContain('from "../scripts/card-lighting.ts?url"');
+    expect(page).toContain("cardLightingUrl");
+    expect(page).not.toContain('src="/src/scripts/card-lighting.ts"');
+  });
+
   it("デフォルトのエフェクトはGildedにする", () => {
     expect(script).toContain('preset: "rare-secret"');
   });
