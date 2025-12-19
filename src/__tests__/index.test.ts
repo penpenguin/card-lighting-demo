@@ -4,6 +4,7 @@ import { describe, expect, it } from "vitest";
 describe("ポケモンカード風ホロ表現", () => {
   const page = readFileSync("src/pages/index.astro", "utf-8");
   const script = readFileSync("src/scripts/card-lighting.ts", "utf-8");
+  const astroConfig = readFileSync("astro.config.mjs", "utf-8");
 
   it("カード本体は元のデモカードをそのまま描画する（iframeを使わない）", () => {
     expect(page).not.toContain("<iframe");
@@ -39,6 +40,13 @@ describe("ポケモンカード風ホロ表現", () => {
     expect(script).toContain("rarityPresets");
     expect(script).toContain("dataset.rarity");
     expect(script).toContain('addBinding(settings, "preset"');
+  });
+
+  it("GitHub Pages向けにbaseとsiteを環境変数で切り替える", () => {
+    expect(astroConfig).toContain("BASE_PATH");
+    expect(astroConfig).toContain("SITE_URL");
+    expect(astroConfig).toContain("base:");
+    expect(astroConfig).toContain("site:");
   });
 
   it("デフォルトのエフェクトはGildedにする", () => {
