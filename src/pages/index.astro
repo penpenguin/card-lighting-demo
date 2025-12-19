@@ -45,6 +45,8 @@
 				display: grid;
 				place-items: center;
 				font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+				padding: clamp(16px, 4vw, 40px);
+				overflow: hidden;
 				background: radial-gradient(circle at 30% 20%, rgba(120, 130, 160, 0.18), transparent 26%),
 					radial-gradient(circle at 80% 70%, rgba(40, 50, 70, 0.35), transparent 38%),
 					#06070c;
@@ -71,7 +73,7 @@
 				place-items: center;
 				perspective: 1100px;
 				isolation: isolate;
-				overflow: visible;
+				overflow: hidden;
 			}
 
 			.stage::before {
@@ -102,8 +104,17 @@
 				position: relative;
 				width: 360px;
 				height: 220px;
-				border-radius: 22px;
-				transform-style: preserve-3d;
+				--card-radius: 18px;
+				border-radius: var(--card-radius);
+				--chip-center-x: 17.6%;
+				--chip-center-y: 44.3%;
+				--pan-center-x: 11.9%;
+				--pan-center-y: 60.7%;
+				--pan-shine-bg:
+					var(--chip-shine-bg,
+						linear-gradient(120deg, rgba(255, 230, 190, 0.75), rgba(140, 210, 255, 0.7), rgba(255, 170, 230, 0.7))
+					),
+					linear-gradient(120deg, rgba(255, 210, 170, 0.35), rgba(120, 200, 255, 0.35), rgba(255, 160, 220, 0.35));
 				background: #0a0a0a;
 				box-shadow:
 					0 32px 80px rgba(0, 0, 0, 0.72),
@@ -111,7 +122,7 @@
 					0 3px 8px rgba(0, 0, 0, 0.38);
 				transform: translateZ(16px);
 				transition: box-shadow 260ms ease, transform 200ms ease;
-				overflow: hidden;
+				overflow: visible;
 				z-index: 1;
 			}
 
@@ -166,19 +177,14 @@
 				position: absolute;
 				inset: 0;
 				transform: translate3d(var(--tx), var(--ty), 0) scale(var(--s));
-				transform-style: preserve-3d;
 				transition: transform 120ms ease;
 			}
 
 			.card__rotator {
 				position: absolute;
 				inset: 0;
+				border-radius: var(--card-radius);
 				transform: rotateY(var(--ry)) rotateX(var(--rx));
-				transform-style: preserve-3d;
-			}
-
-			.card__rotator * {
-				transform-style: preserve-3d;
 			}
 
 			.card__frame {
@@ -224,6 +230,8 @@
 				background: #0a0a0a;
 				transform: translateZ(2px);
 			}
+
+			.layer-matte { opacity: 0; }
 
 			.layer-coat {
 				background: linear-gradient(160deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02) 45%, rgba(255, 255, 255, 0));
@@ -323,14 +331,26 @@
 			}
 
 			.layer-rim {
-				background: linear-gradient(130deg, rgba(255, 255, 255, 0.35), rgba(120, 180, 255, 0.35), rgba(255, 210, 120, 0.4));
-				mix-blend-mode: screen;
-				mask-image:
-					linear-gradient(#000, #000),
-					radial-gradient(circle, transparent 68%, #000 72%);
-				mask-composite: exclude;
+				inset: 0;
+				border-radius: var(--card-radius);
+				background: radial-gradient(90% 90% at var(--mx) var(--my),
+					rgba(255, 255, 255, 0.95) 0%,
+					rgba(160, 210, 255, 0.7) 32%,
+					rgba(255, 255, 255, 0) 58%
+				);
+				padding: 1px;
+				-webkit-mask:
+					linear-gradient(#000 0 0) content-box,
+					linear-gradient(#000 0 0);
 				-webkit-mask-composite: xor;
-				opacity: 0.42;
+				mask:
+					linear-gradient(#000 0 0) content-box,
+					linear-gradient(#000 0 0);
+				mask-composite: exclude;
+				box-shadow: none;
+				mix-blend-mode: screen;
+				opacity: calc(0.24 + 0.6 * var(--hyp));
+				filter: none;
 				transform: translateZ(11px);
 			}
 
@@ -751,14 +771,13 @@
 				display: grid;
 				grid-template-rows: auto 1fr auto;
 				gap: 10px;
-				transform: translateZ(14px);
 				color: #e8ebf5;
 				text-shadow: 0 1px 1px rgba(0, 0, 0, 0.55);
 			}
 
 			.header {
 				display: grid;
-				grid-template-columns: auto 1fr auto;
+				grid-template-columns: auto 1fr;
 				align-items: center;
 				gap: 12px;
 			}
@@ -784,7 +803,10 @@
 					inset 0 2px 3px rgba(255, 255, 255, 0.4),
 					inset 0 -3px 6px rgba(70, 40, 0, 0.45),
 					0 2px 4px rgba(0, 0, 0, 0.45);
-				position: relative;
+				position: absolute;
+				left: var(--chip-center-x);
+				top: var(--chip-center-y);
+				transform: translate(-50%, -50%);
 				overflow: hidden;
 				isolation: isolate;
 			}
@@ -799,7 +821,7 @@
 						conic-gradient(from 200deg at 50% 50%, rgba(255, 220, 150, 0.35), rgba(120, 200, 255, 0.32), rgba(255, 150, 220, 0.3), rgba(255, 220, 150, 0.35)),
 						repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.12) 0 1px, transparent 1px 4px)
 					);
-				background-blend-mode: var(--chip-shine-blend, screen);
+				background-blend-mode: var(--chip-shine-blend, screen), soft-light, normal;
 				background-position: var(--chip-shine-pos, var(--posx) var(--posy));
 				background-size: var(--chip-shine-size, 180% 180%);
 				opacity: 0.78;
@@ -834,31 +856,44 @@
 				opacity: 0.9;
 			}
 
-			.badge {
-				font-size: 11px;
-				font-weight: 700;
-				letter-spacing: 0.08em;
-				text-transform: uppercase;
-				padding: 6px 10px;
-				border-radius: 10px;
-				border: 1px solid rgba(255, 255, 255, 0.18);
-				background: linear-gradient(120deg, rgba(255, 210, 120, 0.22), rgba(120, 200, 255, 0.18), rgba(255, 140, 220, 0.2));
-				box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22);
-			}
+			.number { color: transparent; -webkit-text-fill-color: transparent; text-shadow: none; }
 
 			.number {
-				display: grid;
-				grid-template-columns: repeat(4, 1fr);
-				gap: 10px;
+				position: absolute;
+				left: var(--pan-center-x);
+				top: var(--pan-center-y);
+				transform: translate(-0.5ch, -50%);
+				display: inline-flex;
+				gap: 18px;
 				font-size: 20px;
 				letter-spacing: 0.18em;
 				font-weight: 700;
-				padding: 10px 12px;
-				border-radius: 12px;
+				padding: 0;
+				margin: 0;
 				background: none;
 				box-shadow: none;
-				align-items: center;
-				justify-items: center;
+				font-variant-numeric: tabular-nums;
+				line-height: 1;
+			}
+
+			.number span { position: relative; display: inline-block; color: transparent; -webkit-text-fill-color: transparent; }
+
+			.number span::after {
+				content: attr(data-digit);
+				position: absolute;
+				inset: 0;
+				color: transparent;
+				background: var(--pan-shine-bg);
+				background-blend-mode: var(--chip-shine-blend, screen), soft-light;
+				background-position: var(--posx) var(--posy);
+				background-size: 180% 180%;
+				-webkit-background-clip: text;
+				background-clip: text;
+				-webkit-text-fill-color: transparent;
+				mix-blend-mode: normal;
+				opacity: calc(0.6 + 0.2 * var(--hyp));
+				filter: brightness(calc(0.95 + var(--hyp) * 0.1)) saturate(1.8);
+				pointer-events: none;
 			}
 
 			.footer {
@@ -868,6 +903,7 @@
 				gap: 14px;
 				font-size: 12px;
 				letter-spacing: 0.08em;
+				grid-row: 3;
 			}
 
 			.holder {
@@ -910,10 +946,14 @@
 			.card[data-rarity] .layer-holo,
 			.card[data-rarity] .layer-prism,
 			.card[data-rarity] .layer-shine,
-			.card[data-rarity] .layer-rim,
 			.card[data-rarity] .card__shine,
 			.card[data-rarity] .card__glare {
 				opacity: 0;
+			}
+
+			.card[data-rarity] .card__shine,
+			.card[data-rarity] .card__glare {
+				display: none;
 			}
 
 			.card[data-rarity] .layer-texture,
@@ -964,28 +1004,27 @@
 						<div class="card__cut"></div>
 						<div class="layer layer-shadow"></div>
 						<div class="layer layer-base"></div>
+						<div class="layer layer-matte"></div>
 						<div class="layer layer-coat"></div>
 						<div class="layer layer-texture"></div>
 						<div class="layer layer-foil"></div>
 						<div class="layer layer-holo"></div>
 						<canvas class="layer layer-prism" id="prism-canvas"></canvas>
 						<div class="layer layer-shine"></div>
-						<div class="layer layer-rim"></div>
 						<div class="card__shine" aria-hidden="true"></div>
 						<div class="card__glare" aria-hidden="true"></div>
+						<div class="chip" aria-hidden="true">
+							<span class="chip__shine" aria-hidden="true"></span>
+						</div>
+						<div class="number" aria-label="Card number">
+							<span data-digit="5248">5248</span>
+							<span data-digit="1903">1903</span>
+							<span data-digit="7741">7741</span>
+							<span data-digit="0826">0826</span>
+						</div>
 						<div class="content">
 							<div class="header">
 								<div class="logo">Card Lighting</div>
-								<div class="badge">Premium</div>
-								<div class="chip" aria-hidden="true">
-									<span class="chip__shine" aria-hidden="true"></span>
-								</div>
-							</div>
-							<div class="number" aria-label="Card number">
-								<span>5248</span>
-								<span>1903</span>
-								<span>7741</span>
-								<span>0826</span>
 							</div>
 							<div class="footer">
 								<div class="holder">ALEXANDER NOVA</div>
@@ -993,6 +1032,7 @@
 								<div class="network">VISTA</div>
 							</div>
 						</div>
+						<div class="layer layer-rim"></div>
 					</div>
 				</div>
 			</div>
