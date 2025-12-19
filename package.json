@@ -3,10 +3,13 @@
   "type": "module",
   "version": "0.0.1",
   "scripts": {
+    "predev": "npm run bundle",
     "dev": "astro dev",
+    "prebuild": "npm run bundle",
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
+    "bundle": "esbuild src/scripts/card-lighting.ts --bundle --format=esm --target=es2020 --outfile=public/scripts/card-lighting.js",
     "test": "vitest",
     "check": "astro check"
   },

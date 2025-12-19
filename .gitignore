@@ -2,6 +2,7 @@
 dist/
 # generated types
 .astro/
+public/scripts/card-lighting.js
 
 # dependencies
 node_modules/

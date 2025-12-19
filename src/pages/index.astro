@@ -1,5 +1,5 @@
 ---
-import cardLightingUrl from "../scripts/card-lighting.ts?url";
+const base = (import.meta.env.BASE_URL ?? "/").replace(/\/?$/, "/");
 ---
 <html lang="en">
 	<head>
@@ -599,6 +599,6 @@ import cardLightingUrl from "../scripts/card-lighting.ts?url";
 			</div>
 		</main>
 
-		<script type="module" src={cardLightingUrl}></script>
+		<script type="module" src={`${base}scripts/card-lighting.js`}></script>
 	</body>
 </html>
