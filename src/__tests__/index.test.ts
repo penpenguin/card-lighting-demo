@@ -41,6 +41,16 @@ describe("ポケモンカード風ホロ表現", () => {
     expect(script).toContain('addBinding(settings, "preset"');
   });
 
+  it("カード情報をTweakpaneから変更できる", () => {
+    expect(script).toContain('addFolder({ title: "Card Details"');
+    expect(script).toContain('addBinding(settings, "cardNumber"');
+    expect(script).toContain('addBinding(settings, "cardHolder"');
+    expect(script).toContain('addBinding(settings, "cardExpiry"');
+    expect(script).toContain('querySelector(".holder")');
+    expect(script).toContain('querySelector(".expiry__value")');
+    expect(page).toContain('class="expiry__value"');
+  });
+
   it("各レアリティのCSSをdata-rarityセレクタで切り替える", () => {
     const selectors = [
       '[data-rarity="rare holo"] .card__shine',
@@ -110,6 +120,10 @@ describe("ポケモンカード風ホロ表現", () => {
     expect(page).toContain("box-shadow: none");
   });
 
+  it("カード番号を少し太くしてエフェクトが目立つようにする", () => {
+    expect(page).toContain("number {\n\t\t\t\tposition: absolute;\n\t\t\t\tleft: var(--pan-center-x);\n\t\t\t\ttop: var(--pan-center-y);\n\t\t\t\ttransform: translate(-0.5ch, -50%);\n\t\t\t\tdisplay: inline-flex;\n\t\t\t\tgap: 18px;\n\t\t\t\tfont-size: 20px;\n\t\t\t\tletter-spacing: 0.18em;\n\t\t\t\tfont-weight: 800;");
+  });
+
   it("ICチップの金属感を強める", () => {
     expect(page).toContain(".chip");
     expect(page).toContain("linear-gradient(135deg, #f2d58a");
@@ -160,6 +174,11 @@ describe("ポケモンカード風ホロ表現", () => {
   it("Premiumバッジを表示しない", () => {
     expect(page).not.toContain("Premium");
     expect(page).not.toContain(".badge");
+  });
+
+  it("VISTAロゴを表示しない", () => {
+    expect(page).not.toContain("VISTA");
+    expect(page).not.toContain(".network");
   });
 
   it("radiantでもカード本体のきらきらを抑制する", () => {

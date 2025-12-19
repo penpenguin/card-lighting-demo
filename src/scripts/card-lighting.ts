@@ -8,6 +8,9 @@ if (card) {
   const tiltYMax = 16;
   const translateMax = 18;
   const scaleHover = 1.025;
+  const cardNumberSpans = Array.from(card.querySelectorAll<HTMLSpanElement>(".number span"));
+  const holderEl = card.querySelector(".holder") as HTMLElement | null;
+  const expiryValueEl = card.querySelector(".expiry__value") as HTMLElement | null;
 
   const state = {
     mx: 50,
@@ -55,6 +58,9 @@ if (card) {
 
   const settings = {
     preset: "rare-holo",
+    cardNumber: "5248 1903 7741 0826",
+    cardHolder: "ALEXANDER NOVA",
+    cardExpiry: "12/28",
   };
 
   const applyPreset = (id: string) => {
@@ -64,6 +70,27 @@ if (card) {
     card.dataset.supertype = preset.supertype;
     card.dataset.subtypes = preset.subtypes;
     card.dataset.gallery = preset.gallery ? "true" : "false";
+  };
+
+  const splitCardNumber = (value: string) => {
+    const trimmed = value.trim();
+    if (!trimmed) return ["", "", "", ""];
+    const chunks = trimmed.split(/\s+/).filter(Boolean);
+    const groups = chunks.length > 1 ? chunks : (chunks[0]?.match(/.{1,4}/g) ?? []);
+    while (groups.length < 4) groups.push("");
+    return groups.slice(0, 4);
+  };
+
+  const applyCardDetails = () => {
+    if (holderEl) holderEl.textContent = settings.cardHolder;
+    if (expiryValueEl) expiryValueEl.textContent = settings.cardExpiry;
+    if (!cardNumberSpans.length) return;
+    const groups = splitCardNumber(settings.cardNumber);
+    cardNumberSpans.forEach((span, index) => {
+      const value = groups[index] ?? "";
+      span.textContent = value;
+      span.dataset.digit = value;
+    });
   };
 
   const applyVars = () => {
@@ -158,6 +185,7 @@ if (card) {
   window.addEventListener("pointermove", handlePointerMove);
   window.addEventListener("pointerleave", handlePointerLeave);
   applyPreset(settings.preset);
+  applyCardDetails();
 
   if (paneHost) {
     const pane = new Pane({ title: "Rarity & Motion", container: paneHost });
@@ -169,6 +197,11 @@ if (card) {
       .on("change", (ev) => {
         applyPreset(ev.value);
       });
+
+    const details = pane.addFolder({ title: "Card Details" });
+    details.addBinding(settings, "cardNumber", { label: "Number" }).on("change", applyCardDetails);
+    details.addBinding(settings, "cardHolder", { label: "Name" }).on("change", applyCardDetails);
+    details.addBinding(settings, "cardExpiry", { label: "Expiry" }).on("change", applyCardDetails);
   }
 
   requestAnimationFrame(tick);
