@@ -28,10 +28,15 @@ describe("ポケモンカード風ホロ表現", () => {
     vars.forEach((v) => expect(page).toContain(v));
   });
 
-  it("カードの基礎レイヤーだけ残す", () => {
-    ["layer-base", "layer-rim", "layer-shadow"].forEach((cls) => {
+  it("カード全面にホロ・グレア・粒子レイヤーを重ねる", () => {
+    ["layer-base", "layer-holo", "layer-glare", "layer-sparkles", "layer-rim", "layer-shadow"].forEach((cls) => {
       expect(page).toContain(cls);
     });
+
+    expect(page.indexOf("layer layer-base")).toBeLessThan(page.indexOf("layer layer-holo"));
+    expect(page.indexOf("layer layer-holo")).toBeLessThan(page.indexOf("layer layer-glare"));
+    expect(page.indexOf("layer layer-glare")).toBeLessThan(page.indexOf("layer layer-sparkles"));
+    expect(page.indexOf("layer layer-sparkles")).toBeLessThan(page.indexOf('class="chip"'));
   });
 
   it("Tweakpaneでレアリティプリセットを切り替えられる", () => {
@@ -56,8 +61,8 @@ describe("ポケモンカード風ホロ表現", () => {
     expect(page).not.toContain("card-lighting.ts");
   });
 
-  it("デフォルトのエフェクトはGildedにする", () => {
-    expect(script).toContain('preset: "rare-secret"');
+  it("デフォルトのエフェクトはRadiant Burstにする", () => {
+    expect(script).toContain('preset: "radiant"');
   });
 
   it("レアリティ名をエフェクト名に置き換える", () => {
@@ -136,8 +141,9 @@ describe("ポケモンカード風ホロ表現", () => {
   it("JSでポインター追従用CSS変数と距離係数--hypを更新する", () => {
     const vars = ["--mx", "--my", "--posx", "--posy", "--rx", "--ry", "--tx", "--ty", "--s", "--hyp"];
     vars.forEach((v) => expect(script).toContain(v));
-    expect(script).toContain('window.addEventListener("pointermove"');
-    expect(script).toContain('window.addEventListener("pointerleave"');
+    expect(script).toContain('card.addEventListener("pointermove"');
+    expect(script).toContain('card.addEventListener("pointerleave"');
+    expect(script).toContain("card.getBoundingClientRect()");
     expect(script).toContain("requestAnimationFrame");
   });
 
@@ -284,7 +290,7 @@ describe("ポケモンカード風ホロ表現", () => {
     expect(page).toContain("card__rotator {\n\t\t\t\tposition: absolute;\n\t\t\t\tinset: 0;\n\t\t\t\tborder-radius: var(--card-radius);");
   });
 
-  it("不要なホロ系レイヤーと装飾を削除する", () => {
+  it("旧構成の不要なホロ系レイヤーと装飾を削除する", () => {
     [
       "card__shine",
       "card__glare",
@@ -294,7 +300,6 @@ describe("ポケモンカード風ホロ表現", () => {
       "layer-coat",
       "layer-texture",
       "layer-foil",
-      "layer-holo",
       "layer-prism",
       "layer-shine",
       "prism-canvas",

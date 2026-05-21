@@ -121,6 +121,12 @@ const base = (import.meta.env.BASE_URL ?? "/").replace(/\/?$/, "/");
 				z-index: 1;
 			}
 
+			.card,
+			.card__translater,
+			.card__rotator {
+				transform-style: preserve-3d;
+			}
+
 			.card:hover {
 				box-shadow:
 					0 40px 86px rgba(0, 0, 0, 0.78),
@@ -156,8 +162,97 @@ const base = (import.meta.env.BASE_URL ?? "/").replace(/\/?$/, "/");
 			}
 
 			.layer-base {
+				z-index: 0;
 				background: #0a0a0a;
 				transform: translateZ(2px);
+			}
+
+			.layer-holo {
+				z-index: 1;
+				background:
+					radial-gradient(
+						circle at var(--mx) var(--my),
+						rgba(255, 255, 255, 0.9),
+						rgba(255, 255, 255, 0.18) 16%,
+						transparent 44%
+					),
+					conic-gradient(
+						from 0.35turn at var(--mx) var(--my),
+						rgba(255, 80, 220, 0.72),
+						rgba(90, 220, 255, 0.7),
+						rgba(255, 245, 120, 0.72),
+						rgba(255, 80, 220, 0.72)
+					),
+					repeating-linear-gradient(
+						115deg,
+						transparent 0 8px,
+						rgba(255, 255, 255, 0.28) 9px,
+						transparent 11px 18px
+					);
+				background-size: 140% 140%, 170% 170%, 120% 120%;
+				background-position: var(--posx) var(--posy);
+				background-blend-mode: screen, color-dodge, screen;
+				mix-blend-mode: color-dodge;
+				opacity: calc(0.22 + 0.58 * var(--hyp));
+				filter: saturate(2.2) contrast(1.45) brightness(1.18);
+				transform: translateZ(5px);
+			}
+
+			.layer-glare {
+				z-index: 2;
+				background:
+					linear-gradient(
+						115deg,
+						transparent 0 30%,
+						rgba(255, 255, 255, 0.18) 42%,
+						rgba(255, 255, 255, 0.88) 48%,
+						rgba(255, 255, 255, 0.18) 55%,
+						transparent 70%
+					),
+					radial-gradient(
+						180px 120px at var(--mx) var(--my),
+						rgba(255, 255, 255, 0.72),
+						transparent 68%
+					);
+				background-size: 220% 220%, 100% 100%;
+				background-position:
+					calc(100% - var(--posx)) calc(100% - var(--posy)),
+					var(--mx) var(--my);
+				mix-blend-mode: screen;
+				opacity: calc(0.16 + 0.52 * var(--hyp));
+				filter: blur(0.2px);
+				transform: translateZ(8px);
+			}
+
+			.layer-sparkles {
+				z-index: 3;
+				background:
+					radial-gradient(circle, rgba(255, 255, 255, 0.95) 0 1px, transparent 1.8px),
+					radial-gradient(circle, rgba(140, 220, 255, 0.9) 0 1px, transparent 2px),
+					radial-gradient(circle, rgba(255, 165, 240, 0.85) 0 1px, transparent 2px);
+				background-size: 23px 23px, 37px 37px, 53px 53px;
+				background-position:
+					var(--posx) var(--posy),
+					calc(100% - var(--posx)) var(--posy),
+					var(--posx) calc(100% - var(--posy));
+				mix-blend-mode: screen;
+				opacity: calc(0.12 + 0.62 * var(--hyp));
+				filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.85)) brightness(1.6);
+				transform: translateZ(9px);
+				animation: sparkle-twinkle 900ms steps(2, end) infinite;
+			}
+
+			@keyframes sparkle-twinkle {
+				50% {
+					opacity: calc(0.22 + 0.72 * var(--hyp));
+					filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.95)) brightness(2.1);
+				}
+			}
+
+			.chip,
+			.number,
+			.content {
+				z-index: 4;
 			}
 
 			.layer-rim {
@@ -168,6 +263,7 @@ const base = (import.meta.env.BASE_URL ?? "/").replace(/\/?$/, "/");
 					var(--rim-glow-color-2) 32%,
 					var(--rim-glow-color-3) 58%
 				);
+				z-index: 5;
 				padding: 1px;
 				-webkit-mask:
 					linear-gradient(#000 0 0) content-box,
@@ -537,6 +633,10 @@ const base = (import.meta.env.BASE_URL ?? "/").replace(/\/?$/, "/");
 					transition: none;
 					transform: none;
 				}
+
+				.layer-sparkles {
+					animation: none;
+				}
 			}
 
 			.pane-host {
@@ -563,15 +663,18 @@ const base = (import.meta.env.BASE_URL ?? "/").replace(/\/?$/, "/");
 			<div
 				class="card"
 				id="card"
-				data-rarity="rare holo"
+				data-rarity="radiant"
 				data-supertype="pokemon"
-				data-subtypes="basic"
+				data-subtypes="radiant"
 				data-gallery="false"
 			>
 				<div class="card__translater">
 					<div class="card__rotator">
 						<div class="layer layer-shadow"></div>
 						<div class="layer layer-base"></div>
+						<div class="layer layer-holo"></div>
+						<div class="layer layer-glare"></div>
+						<div class="layer layer-sparkles"></div>
 						<div class="chip" aria-hidden="true">
 							<span class="chip__shine" aria-hidden="true"></span>
 						</div>

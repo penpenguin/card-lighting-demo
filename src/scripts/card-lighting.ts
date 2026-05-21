@@ -1,11 +1,12 @@
 import { Pane } from "tweakpane";
+import { getPointerTarget } from "./pointer-math";
 
 const card = document.getElementById("card") as HTMLElement | null;
 const paneHost = document.getElementById("pane-host") as HTMLElement | null;
 
 if (card) {
-  const tiltXMax = 14;
-  const tiltYMax = 16;
+  const tiltXMax = 18;
+  const tiltYMax = 22;
   const translateMax = 18;
   const scaleHover = 1.025;
   const cardNumberSpans = Array.from(card.querySelectorAll<HTMLSpanElement>(".number span"));
@@ -55,7 +56,7 @@ if (card) {
   ];
 
   const settings = {
-    preset: "rare-secret",
+    preset: "radiant",
     cardNumber: "5248 1903 7741 0826",
     cardHolder: "ALEXANDER NOVA",
     cardExpiry: "12/28",
@@ -106,26 +107,11 @@ if (card) {
 
   const handlePointerMove = (event: PointerEvent) => {
     lastPointerMove = performance.now();
-    const vw = Math.max(1, window.innerWidth);
-    const vh = Math.max(1, window.innerHeight);
-    const x = event.clientX / vw;
-    const y = event.clientY / vh;
-    const clampedX = Math.max(0, Math.min(1, x));
-    const clampedY = Math.max(0, Math.min(1, y));
-    const dx = clampedX - 0.5;
-    const dy = clampedY - 0.5;
-    const hyp = Math.min(1, Math.hypot(dx, dy) * 2);
-
-    target.mx = clampedX * 100;
-    target.my = clampedY * 100;
-    target.posx = clampedX * 100;
-    target.posy = clampedY * 100;
-    target.rx = -(dy * tiltXMax);
-    target.ry = dx * tiltYMax;
-    target.tx = dx * translateMax;
-    target.ty = dy * translateMax;
-    target.s = scaleHover;
-    target.hyp = hyp;
+    const rect = card.getBoundingClientRect();
+    Object.assign(
+      target,
+      getPointerTarget(event, rect, { tiltXMax, tiltYMax, translateMax, scaleHover }),
+    );
   };
 
   const handlePointerLeave = () => {
@@ -180,8 +166,8 @@ if (card) {
     requestAnimationFrame(tick);
   };
 
-  window.addEventListener("pointermove", handlePointerMove);
-  window.addEventListener("pointerleave", handlePointerLeave);
+  card.addEventListener("pointermove", handlePointerMove);
+  card.addEventListener("pointerleave", handlePointerLeave);
   applyPreset(settings.preset);
   applyCardDetails();
 
