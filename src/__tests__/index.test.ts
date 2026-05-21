@@ -76,9 +76,17 @@ describe("ポケモンカード風ホロ表現", () => {
     expect(glareBlock).not.toContain("rgba(255, 255, 255, 0.88)");
     expect(glareBlock).not.toContain("rgba(255, 255, 255, 0.72)");
 
-    expect(holoBlock).toContain("repeating-linear-gradient");
-    expect(holoBlock).toContain("opacity: calc(0.08 + 0.12 * var(--hyp))");
-    expect(holoBlock).toContain("filter: none");
+    expect(page).toContain("--holo-texture-bg:");
+    expect(page).toContain("--holo-texture-opacity: calc(0.08 + 0.12 * var(--hyp))");
+    expect(page).toContain("--holo-texture-size: 120% 120%");
+    expect(page).toContain("--holo-texture-position: var(--posx) var(--posy)");
+
+    expect(holoBlock).toContain("background: var(--holo-texture-bg)");
+    expect(holoBlock).toContain("background-size: var(--holo-texture-size)");
+    expect(holoBlock).toContain("background-position: var(--holo-texture-position)");
+    expect(holoBlock).toContain("mix-blend-mode: var(--holo-texture-blend, screen)");
+    expect(holoBlock).toContain("opacity: var(--holo-texture-opacity)");
+    expect(holoBlock).toContain("filter: var(--holo-texture-filter, none)");
     expect(holoBlock).not.toContain("conic-gradient");
 
     expect(topGlareBlock).toContain("background: var(--surface-shine-bg)");
@@ -428,6 +436,37 @@ describe("ポケモンカード風ホロ表現", () => {
     expect(page).toContain("repeating-linear-gradient(\n\t\t\t\t\t\t45deg");
     expect(page).toContain("rgba(255, 225, 150, 0.18) 0 2px");
     expect(page).toContain("--surface-shine-opacity: calc(0.08 + 0.42 * var(--hyp))");
+  });
+
+  it("V系エフェクトはそれぞれ別のホロ素材テクスチャを持つ", () => {
+    const vBlock = page.match(/\.card\[data-rarity\*="rare holo v"\] \{[\s\S]*?\n\t\t\t\}/)?.[0] ?? "";
+    const vmaxBlock = page.match(/\.card\[data-rarity="rare holo vmax"\] \{[\s\S]*?\n\t\t\t\}/)?.[0] ?? "";
+    const vstarBlock = page.match(/\.card\[data-rarity="rare holo vstar"\]\[data-supertype="pokemon"\] \{[\s\S]*?\n\t\t\t\}/)?.[0] ?? "";
+
+    expect(vBlock).toContain("--holo-texture-bg:");
+    expect(vBlock).toContain("repeating-linear-gradient(\n\t\t\t\t\t\t96deg");
+    expect(vBlock).toContain("transparent 0 7px");
+
+    expect(vmaxBlock).toContain("--holo-texture-bg:");
+    expect(vmaxBlock).toContain("repeating-linear-gradient(\n\t\t\t\t\t\t58deg");
+    expect(vmaxBlock).toContain("repeating-linear-gradient(\n\t\t\t\t\t\t122deg");
+
+    expect(vstarBlock).toContain("--holo-texture-bg:");
+    expect(vstarBlock).toContain("radial-gradient(circle at var(--mx) var(--my)");
+    expect(vstarBlock).toContain("conic-gradient(from calc(0.12turn)");
+  });
+
+  it("Rainbowは広い色相帯、Radiantは光源周辺の強いバーストとして分ける", () => {
+    const rainbowBlock = page.match(/\.card\[data-rarity\^="rare rainbow"\] \{[\s\S]*?\n\t\t\t\}/)?.[0] ?? "";
+    const radiantBlock = page.match(/\.card\[data-rarity\*="radiant"\] \{[\s\S]*?\n\t\t\t\}/)?.[0] ?? "";
+
+    expect(rainbowBlock).toContain("conic-gradient(from calc(0.05turn)");
+    expect(rainbowBlock).toContain("linear-gradient(90deg");
+    expect(rainbowBlock).toContain("--holo-texture-opacity: calc(0.12 + 0.16 * var(--hyp))");
+
+    expect(radiantBlock).toContain("radial-gradient(90px 70px at var(--mx) var(--my), rgba(255, 255, 255, 0.92)");
+    expect(radiantBlock).toContain("conic-gradient(from calc(0.35turn) at var(--mx) var(--my)");
+    expect(radiantBlock).toContain("--surface-shine-opacity: calc(0.18 + 0.62 * var(--hyp))");
   });
 
   it("カードの縁の丸みを少し強める", () => {
