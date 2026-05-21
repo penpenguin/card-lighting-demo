@@ -19,7 +19,7 @@ const base = (import.meta.env.BASE_URL ?? "/").replace(/\/?$/, "/");
 				--tx: 0px;
 				--ty: 0px;
 				--s: 1;
-				--hyp: 0.55;
+				--hyp: 0.35;
 				--light-strength: 1;
 				color-scheme: dark;
 			}
@@ -171,10 +171,10 @@ const base = (import.meta.env.BASE_URL ?? "/").replace(/\/?$/, "/");
 			.layer-base {
 				z-index: 1;
 				background:
-					radial-gradient(120% 90% at 22% 18%, rgba(92, 215, 255, 0.32), transparent 48%),
-					radial-gradient(100% 90% at 76% 24%, rgba(255, 116, 230, 0.28), transparent 52%),
-					radial-gradient(110% 95% at 54% 86%, rgba(255, 230, 128, 0.22), transparent 58%),
-					linear-gradient(135deg, #172033 0%, #1b2138 42%, #20243a 68%, #131927 100%);
+					radial-gradient(120% 90% at 22% 18%, rgba(92, 215, 255, 0.18), transparent 48%),
+					radial-gradient(100% 90% at 76% 24%, rgba(255, 116, 230, 0.14), transparent 52%),
+					radial-gradient(110% 95% at 54% 86%, rgba(255, 230, 128, 0.1), transparent 58%),
+					linear-gradient(135deg, #0d1320 0%, #111827 42%, #151826 68%, #090d16 100%);
 				transform: none;
 			}
 
@@ -204,8 +204,8 @@ const base = (import.meta.env.BASE_URL ?? "/").replace(/\/?$/, "/");
 				background-position: var(--posx) var(--posy);
 				background-blend-mode: screen, screen, screen;
 				mix-blend-mode: screen;
-				opacity: calc(0.48 + 0.38 * var(--hyp));
-				filter: saturate(2.4) contrast(1.28) brightness(1.24);
+				opacity: calc(0.22 + 0.48 * var(--hyp));
+				filter: saturate(2.1) contrast(1.35) brightness(1.12);
 				transform: none;
 			}
 
@@ -230,7 +230,7 @@ const base = (import.meta.env.BASE_URL ?? "/").replace(/\/?$/, "/");
 					calc(100% - var(--posx)) calc(100% - var(--posy)),
 					var(--mx) var(--my);
 				mix-blend-mode: screen;
-				opacity: calc(0.16 + 0.52 * var(--hyp));
+				opacity: calc(0.08 + 0.42 * var(--hyp));
 				filter: blur(0.2px);
 				transform: none;
 			}
@@ -247,8 +247,10 @@ const base = (import.meta.env.BASE_URL ?? "/").replace(/\/?$/, "/");
 				background-position: var(--posx) var(--posy);
 				background-repeat: no-repeat;
 				mix-blend-mode: screen;
-				opacity: calc(0.22 + 0.52 * var(--hyp));
-				filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.9)) brightness(1.8);
+				opacity: calc(0.04 + 0.38 * var(--hyp));
+				filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.82)) brightness(1.65);
+				-webkit-mask-image: radial-gradient(180px 130px at var(--mx) var(--my), #000 0 42%, transparent 78%);
+				mask-image: radial-gradient(180px 130px at var(--mx) var(--my), #000 0 42%, transparent 78%);
 				transform: none;
 				animation: sparkle-twinkle 900ms steps(2, end) infinite;
 			}
@@ -272,31 +274,38 @@ const base = (import.meta.env.BASE_URL ?? "/").replace(/\/?$/, "/");
 				background:
 					linear-gradient(
 						112deg,
-						transparent 0 20%,
-						rgba(255, 255, 255, 0.12) 35%,
-						rgba(255, 255, 255, 0.55) 45%,
-						rgba(120, 230, 255, 0.18) 52%,
-						transparent 68%
+						transparent 0 37%,
+						rgba(255, 255, 255, 0.12) 43%,
+						rgba(255, 255, 255, 0.92) 47%,
+						rgba(120, 230, 255, 0.18) 50%,
+						transparent 56%
+					),
+					linear-gradient(
+						112deg,
+						transparent 0 18%,
+						rgba(255, 255, 255, 0.22) 21%,
+						transparent 25%
 					),
 					radial-gradient(
 						220px 150px at var(--mx) var(--my),
-						rgba(255, 255, 255, 0.38),
+						rgba(255, 255, 255, 0.26),
 						transparent 72%
 					);
-				background-size: 240% 240%, 100% 100%;
+				background-size: 260% 260%, 180% 180%, 100% 100%;
 				background-position:
 					calc(100% - var(--posx)) calc(100% - var(--posy)),
+					var(--posx) var(--posy),
 					var(--mx) var(--my);
 				mix-blend-mode: screen;
-				opacity: calc(0.18 + 0.34 * var(--hyp));
-				filter: blur(0.18px);
+				opacity: calc(0.08 + 0.32 * var(--hyp));
+				filter: blur(0.12px);
 				transform: none;
 			}
 
 			@keyframes sparkle-twinkle {
 				50% {
-					opacity: calc(0.22 + 0.72 * var(--hyp));
-					filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.95)) brightness(2.1);
+					opacity: calc(0.08 + 0.52 * var(--hyp));
+					filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.9)) brightness(1.9);
 				}
 			}
 

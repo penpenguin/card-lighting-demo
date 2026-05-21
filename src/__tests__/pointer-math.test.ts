@@ -30,11 +30,11 @@ describe("カード基準のポインター座標", () => {
     expect(target.hyp).toBe(1);
   });
 
-  it("カード中心でもホロ素材の最低光量を維持する", () => {
+  it("カード中心では淡い膜になりすぎない最低光量に抑える", () => {
     const target = getPointerTarget({ clientX: 200, clientY: 100 }, rect, motion);
 
     expect(target.mx).toBe(50);
     expect(target.my).toBe(50);
-    expect(target.hyp).toBe(0.55);
+    expect(target.hyp).toBe(0.35);
   });
 });

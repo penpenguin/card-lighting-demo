@@ -43,7 +43,7 @@ export const getPointerTarget = (
   const clampedY = clamp01(y);
   const dx = clampedX - 0.5;
   const dy = clampedY - 0.5;
-  const hyp = Math.max(0.55, Math.min(1, Math.hypot(dx, dy) * 2));
+  const hyp = Math.max(0.35, Math.min(1, Math.hypot(dx, dy) * 2));
 
   return {
     mx: clampedX * 100,

@@ -23,7 +23,7 @@ if (card) {
     tx: 0,
     ty: 0,
     s: 1,
-    hyp: 0.55,
+    hyp: 0.35,
   };
 
   const target = { ...state };
@@ -125,7 +125,7 @@ if (card) {
     target.tx = 0;
     target.ty = 0;
     target.s = 1;
-    target.hyp = 0.55;
+    target.hyp = 0.35;
   };
 
   const idleOrbit = (time: number) => {
@@ -142,7 +142,7 @@ if (card) {
     target.s = 1.01;
     const dx = target.mx / 100 - 0.5;
     const dy = target.my / 100 - 0.5;
-    target.hyp = Math.max(0.55, Math.min(1, Math.hypot(dx, dy) * 2));
+    target.hyp = Math.max(0.35, Math.min(1, Math.hypot(dx, dy) * 2));
   };
 
   const tick = () => {

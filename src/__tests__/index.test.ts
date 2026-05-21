@@ -41,16 +41,21 @@ describe("ポケモンカード風ホロ表現", () => {
     expect(page.indexOf("layer layer-top-glare")).toBeLessThan(page.indexOf("layer layer-rim"));
   });
 
-  it("ホロは黒いカード上のoverlayではなく明るい素材面として発色する", () => {
+  it("ホロ素材は暗部を残しつつ局所反射で発色する", () => {
     expect(page).toContain(".layer-base");
     expect(page).toContain("linear-gradient(135deg");
     expect(page).toContain("radial-gradient(120% 90% at 22% 18%");
+    expect(page).toContain("rgba(92, 215, 255, 0.18)");
+    expect(page).toContain("#0d1320");
     expect(page).not.toContain(".layer-base {\n\t\t\t\tz-index: 0;\n\t\t\t\tbackground: #0a0a0a;");
 
     expect(page).toContain("mix-blend-mode: screen");
     expect(page).not.toContain("mix-blend-mode: plus-lighter");
     expect(page).not.toContain("mix-blend-mode: color-dodge");
-    expect(page).toContain("opacity: calc(0.48 + 0.38 * var(--hyp))");
+    expect(page).toContain("opacity: calc(0.22 + 0.48 * var(--hyp))");
+    expect(page).toContain("filter: saturate(2.1) contrast(1.35) brightness(1.12)");
+    expect(page).toContain("opacity: calc(0.08 + 0.42 * var(--hyp))");
+    expect(page).toContain("opacity: calc(0.08 + 0.32 * var(--hyp))");
   });
 
   it("カード内部レイヤーは3D depthではなく2D stackingで安定させる", () => {
@@ -89,6 +94,8 @@ describe("ポケモンカード風ホロ表現", () => {
     expect(sparklesBlock).toContain("73% 28%");
     expect(sparklesBlock).toContain("84% 72%");
     expect(sparkleAfterBlock).toContain("13% 64%");
+    expect(sparklesBlock).toContain("mask-image: radial-gradient(180px 130px at var(--mx) var(--my)");
+    expect(sparklesBlock).toContain("opacity: calc(0.04 + 0.38 * var(--hyp))");
     expect(sparklesBlock + sparkleAfterBlock).not.toContain("repeating-");
   });
 
@@ -197,6 +204,9 @@ describe("ポケモンカード風ホロ表現", () => {
     expect(script).toContain('card.addEventListener("pointermove"');
     expect(script).toContain('card.addEventListener("pointerleave"');
     expect(script).toContain("card.getBoundingClientRect()");
+    expect(script).toContain("hyp: 0.35");
+    expect(script).toContain("target.hyp = 0.35");
+    expect(script).toContain("Math.max(0.35, Math.min(1, Math.hypot(dx, dy) * 2))");
     expect(script).toContain("requestAnimationFrame");
   });
 
