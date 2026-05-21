@@ -55,7 +55,12 @@ describe("ポケモンカード風ホロ表現", () => {
     expect(page).toContain("opacity: calc(0.22 + 0.48 * var(--hyp))");
     expect(page).toContain("filter: saturate(2.1) contrast(1.35) brightness(1.12)");
     expect(page).toContain("opacity: calc(0.08 + 0.42 * var(--hyp))");
-    expect(page).toContain("opacity: calc(0.08 + 0.32 * var(--hyp))");
+    expect(page).toContain("transparent 0 39%");
+    expect(page).toContain("rgba(255, 255, 255, 1) 46%");
+    expect(page).toContain("rgba(120, 230, 255, 0.22) 48%");
+    expect(page).toContain("transparent 53%");
+    expect(page).toContain("opacity: calc(0.1 + 0.38 * var(--hyp))");
+    expect(page).toContain("filter: blur(0.08px)");
   });
 
   it("カード内部レイヤーは3D depthではなく2D stackingで安定させる", () => {
