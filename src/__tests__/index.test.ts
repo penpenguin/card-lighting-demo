@@ -42,6 +42,9 @@ describe("ポケモンカード風ホロ表現", () => {
   });
 
   it("ホロ素材は暗部を残しつつ局所反射で発色する", () => {
+    const holoBlock = page.match(/\.layer-holo \{[\s\S]*?\n\t\t\t\}/)?.[0] ?? "";
+    const topGlareBlock = page.match(/\.layer-top-glare \{[\s\S]*?\n\t\t\t\}/)?.[0] ?? "";
+
     expect(page).toContain(".layer-base");
     expect(page).toContain("linear-gradient(135deg");
     expect(page).toContain("radial-gradient(120% 90% at 22% 18%");
@@ -52,15 +55,26 @@ describe("ポケモンカード風ホロ表現", () => {
     expect(page).toContain("mix-blend-mode: screen");
     expect(page).not.toContain("mix-blend-mode: plus-lighter");
     expect(page).not.toContain("mix-blend-mode: color-dodge");
-    expect(page).toContain("opacity: calc(0.22 + 0.48 * var(--hyp))");
-    expect(page).toContain("filter: saturate(2.1) contrast(1.35) brightness(1.12)");
     expect(page).toContain("opacity: calc(0.08 + 0.42 * var(--hyp))");
-    expect(page).toContain("transparent 0 39%");
-    expect(page).toContain("rgba(255, 255, 255, 1) 46%");
-    expect(page).toContain("rgba(120, 230, 255, 0.22) 48%");
-    expect(page).toContain("transparent 53%");
-    expect(page).toContain("opacity: calc(0.1 + 0.38 * var(--hyp))");
-    expect(page).toContain("filter: blur(0.08px)");
+
+    expect(page).toContain("--surface-shine-bg");
+    expect(page).toContain("--surface-shine-blend: screen");
+    expect(page).toContain("--surface-shine-filter: saturate(1.8) contrast(1.25) brightness(1.1)");
+    expect(page).toContain("--surface-shine-opacity: calc(0.12 + 0.48 * var(--hyp))");
+
+    expect(holoBlock).toContain("repeating-linear-gradient");
+    expect(holoBlock).toContain("opacity: calc(0.08 + 0.12 * var(--hyp))");
+    expect(holoBlock).toContain("filter: none");
+    expect(holoBlock).not.toContain("conic-gradient");
+
+    expect(topGlareBlock).toContain("background: var(--surface-shine-bg)");
+    expect(topGlareBlock).toContain("mix-blend-mode: var(--surface-shine-blend, screen)");
+    expect(topGlareBlock).toContain("opacity: var(--surface-shine-opacity)");
+    expect(topGlareBlock).toContain("filter: var(--surface-shine-filter)");
+    expect(topGlareBlock).toContain("mask-image:");
+    expect(topGlareBlock).toContain("linear-gradient(");
+    expect(topGlareBlock).toContain("radial-gradient(");
+    expect(topGlareBlock).not.toContain("rgba(255, 255, 255, 1) 46%");
   });
 
   it("カード内部レイヤーは3D depthではなく2D stackingで安定させる", () => {
@@ -266,6 +280,8 @@ describe("ポケモンカード風ホロ表現", () => {
   it("ICチップの光沢がプリセットに追従する", () => {
     expect(page).toContain("var(--chip-shine-bg");
     expect(page).toContain("--chip-shine-bg");
+    expect(page).toContain("var(--surface-shine-bg");
+    expect(page).toContain("--surface-shine-bg");
     expect(page).toContain('data-rarity="rare holo"');
     expect(page).toContain('data-rarity="rare holo galaxy"');
   });
@@ -347,6 +363,34 @@ describe("ポケモンカード風ホロ表現", () => {
     rimBlocks.forEach((pattern) => {
       expect(page).toMatch(new RegExp(pattern));
     });
+  });
+
+  it("レアリティに応じてカード表面の反射色が変わる", () => {
+    expect(page).toContain("--surface-shine-bg");
+    expect(page).toContain("--surface-shine-filter");
+    expect(page).toContain("--surface-shine-opacity");
+
+    const surfaceBlocks = [
+      String.raw`\[data-rarity="rare holo"\][^}]*--surface-shine-bg`,
+      String.raw`\[data-rarity="rare holo galaxy"\][^}]*--surface-shine-bg`,
+      String.raw`\[data-rarity\*="rare holo v"\][^}]*--surface-shine-bg`,
+      String.raw`\[data-rarity="rare holo vmax"\][^}]*--surface-shine-bg`,
+      String.raw`\[data-rarity="rare holo vstar"\][^}]*--surface-shine-bg`,
+      String.raw`\[data-rarity="rare ultra"\]\[data-supertype="pokemon"\][^}]*--surface-shine-bg`,
+      String.raw`\[data-rarity="rare ultra"\]\[data-subtypes\*="supporter"\][^}]*--surface-shine-bg`,
+      String.raw`\[data-rarity\^="rare rainbow"\][^}]*--surface-shine-bg`,
+      String.raw`\[data-rarity="rare secret"\][^}]*--surface-shine-bg`,
+      String.raw`\[data-rarity\*="radiant"\][^}]*--surface-shine-bg`,
+      String.raw`\[data-rarity="rare holo"\]\[data-gallery="true"\][^}]*--surface-shine-bg`,
+      String.raw`\[data-rarity="rare holo v"\]\[data-gallery="true"\][^}]*--surface-shine-bg`,
+    ];
+
+    surfaceBlocks.forEach((pattern) => {
+      expect(page).toMatch(new RegExp(pattern));
+    });
+
+    expect(page).toContain("rgba(255, 180, 240, 0.22) 43%");
+    expect(page).toContain("rgba(90, 230, 255, 0.74)");
   });
 
   it("カードの縁の丸みを少し強める", () => {
