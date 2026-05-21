@@ -122,9 +122,8 @@ const base = (import.meta.env.BASE_URL ?? "/").replace(/\/?$/, "/");
 			}
 
 			.card,
-			.card__translater,
-			.card__rotator {
-				transform-style: preserve-3d;
+			.card__translater {
+				transform-style: flat;
 			}
 
 			.card:hover {
@@ -146,6 +145,11 @@ const base = (import.meta.env.BASE_URL ?? "/").replace(/\/?$/, "/");
 				inset: 0;
 				border-radius: var(--card-radius);
 				transform: rotateY(var(--ry)) rotateX(var(--rx));
+				transform-style: flat;
+				overflow: hidden;
+				isolation: isolate;
+				clip-path: inset(0 round var(--card-radius));
+				backface-visibility: hidden;
 			}
 
 			.layer {
@@ -153,26 +157,29 @@ const base = (import.meta.env.BASE_URL ?? "/").replace(/\/?$/, "/");
 				inset: 0;
 				border-radius: inherit;
 				pointer-events: none;
+				transform: none;
+				backface-visibility: hidden;
 			}
 
 			.layer-shadow {
+				z-index: 0;
 				background: radial-gradient(90% 120% at 50% 80%, rgba(0, 0, 0, 0.55), transparent 70%);
 				filter: blur(10px);
-				transform: translateZ(1px);
+				transform: none;
 			}
 
 			.layer-base {
-				z-index: 0;
+				z-index: 1;
 				background:
 					radial-gradient(120% 90% at 22% 18%, rgba(92, 215, 255, 0.32), transparent 48%),
 					radial-gradient(100% 90% at 76% 24%, rgba(255, 116, 230, 0.28), transparent 52%),
 					radial-gradient(110% 95% at 54% 86%, rgba(255, 230, 128, 0.22), transparent 58%),
 					linear-gradient(135deg, #172033 0%, #1b2138 42%, #20243a 68%, #131927 100%);
-				transform: translateZ(2px);
+				transform: none;
 			}
 
 			.layer-holo {
-				z-index: 1;
+				z-index: 2;
 				background:
 					radial-gradient(
 						circle at var(--mx) var(--my),
@@ -197,14 +204,13 @@ const base = (import.meta.env.BASE_URL ?? "/").replace(/\/?$/, "/");
 				background-position: var(--posx) var(--posy);
 				background-blend-mode: screen, screen, screen;
 				mix-blend-mode: screen;
-				mix-blend-mode: plus-lighter;
 				opacity: calc(0.48 + 0.38 * var(--hyp));
 				filter: saturate(2.4) contrast(1.28) brightness(1.24);
-				transform: translateZ(5px);
+				transform: none;
 			}
 
 			.layer-glare {
-				z-index: 2;
+				z-index: 3;
 				background:
 					linear-gradient(
 						115deg,
@@ -226,7 +232,7 @@ const base = (import.meta.env.BASE_URL ?? "/").replace(/\/?$/, "/");
 				mix-blend-mode: screen;
 				opacity: calc(0.16 + 0.52 * var(--hyp));
 				filter: blur(0.2px);
-				transform: translateZ(8px);
+				transform: none;
 			}
 
 			.layer-sparkles {
@@ -243,7 +249,7 @@ const base = (import.meta.env.BASE_URL ?? "/").replace(/\/?$/, "/");
 				mix-blend-mode: screen;
 				opacity: calc(0.22 + 0.52 * var(--hyp));
 				filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.9)) brightness(1.8);
-				transform: translateZ(12px);
+				transform: none;
 				animation: sparkle-twinkle 900ms steps(2, end) infinite;
 			}
 
@@ -258,7 +264,7 @@ const base = (import.meta.env.BASE_URL ?? "/").replace(/\/?$/, "/");
 					radial-gradient(circle at 67% 63%, rgba(255, 150, 238, 0.72) 0 0.9px, transparent 2.3px),
 					radial-gradient(circle at 31% 38%, rgba(255, 245, 170, 0.74) 0 0.8px, transparent 2px);
 				background-repeat: no-repeat;
-				transform: translateZ(0);
+				transform: none;
 			}
 
 			.layer-top-glare {
@@ -284,7 +290,7 @@ const base = (import.meta.env.BASE_URL ?? "/").replace(/\/?$/, "/");
 				mix-blend-mode: screen;
 				opacity: calc(0.18 + 0.34 * var(--hyp));
 				filter: blur(0.18px);
-				transform: translateZ(13px);
+				transform: none;
 			}
 
 			@keyframes sparkle-twinkle {
@@ -322,7 +328,7 @@ const base = (import.meta.env.BASE_URL ?? "/").replace(/\/?$/, "/");
 				mix-blend-mode: screen;
 				opacity: calc(var(--rim-glow-opacity, 0.24) + 0.6 * var(--hyp));
 				filter: none;
-				transform: translateZ(11px);
+				transform: none;
 			}
 
 			/* --- rare holo --- */

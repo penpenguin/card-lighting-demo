@@ -48,9 +48,37 @@ describe("ポケモンカード風ホロ表現", () => {
     expect(page).not.toContain(".layer-base {\n\t\t\t\tz-index: 0;\n\t\t\t\tbackground: #0a0a0a;");
 
     expect(page).toContain("mix-blend-mode: screen");
-    expect(page).toContain("mix-blend-mode: plus-lighter");
+    expect(page).not.toContain("mix-blend-mode: plus-lighter");
     expect(page).not.toContain("mix-blend-mode: color-dodge");
     expect(page).toContain("opacity: calc(0.48 + 0.38 * var(--hyp))");
+  });
+
+  it("カード内部レイヤーは3D depthではなく2D stackingで安定させる", () => {
+    expect(page).toContain(".card,\n\t\t\t.card__translater {\n\t\t\t\ttransform-style: flat;");
+    expect(page).toContain("card__rotator {\n\t\t\t\tposition: absolute;\n\t\t\t\tinset: 0;\n\t\t\t\tborder-radius: var(--card-radius);\n\t\t\t\ttransform: rotateY(var(--ry)) rotateX(var(--rx));\n\t\t\t\ttransform-style: flat;");
+    expect(page).toContain("overflow: hidden");
+    expect(page).toContain("isolation: isolate");
+    expect(page).toContain("clip-path: inset(0 round var(--card-radius))");
+    expect(page).toContain("backface-visibility: hidden");
+
+    const layerBlock = page.match(/\.layer \{[\s\S]*?\n\t\t\t\}/)?.[0] ?? "";
+    expect(layerBlock).toContain("transform: none");
+    expect(layerBlock).toContain("backface-visibility: hidden");
+
+    [
+      ".layer-shadow",
+      ".layer-base",
+      ".layer-holo",
+      ".layer-glare",
+      ".layer-sparkles",
+      ".layer-top-glare",
+      ".layer-rim",
+    ].forEach((selector) => {
+      const escaped = selector.replace(".", "\\.");
+      const block = page.match(new RegExp(`${escaped} \\{[\\s\\S]*?\\n\\t\\t\\t\\}`))?.[0] ?? "";
+      expect(block).toContain("transform: none");
+      expect(block).not.toContain("translateZ(");
+    });
   });
 
   it("粒子は規則的なrepeating patternではなく不規則な固定spotで作る", () => {
