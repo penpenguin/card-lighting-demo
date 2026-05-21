@@ -29,14 +29,39 @@ describe("ポケモンカード風ホロ表現", () => {
   });
 
   it("カード全面にホロ・グレア・粒子レイヤーを重ねる", () => {
-    ["layer-base", "layer-holo", "layer-glare", "layer-sparkles", "layer-rim", "layer-shadow"].forEach((cls) => {
+    ["layer-base", "layer-holo", "layer-glare", "layer-sparkles", "layer-top-glare", "layer-rim", "layer-shadow"].forEach((cls) => {
       expect(page).toContain(cls);
     });
 
     expect(page.indexOf("layer layer-base")).toBeLessThan(page.indexOf("layer layer-holo"));
     expect(page.indexOf("layer layer-holo")).toBeLessThan(page.indexOf("layer layer-glare"));
-    expect(page.indexOf("layer layer-glare")).toBeLessThan(page.indexOf("layer layer-sparkles"));
-    expect(page.indexOf("layer layer-sparkles")).toBeLessThan(page.indexOf('class="chip"'));
+    expect(page.indexOf("layer layer-glare")).toBeLessThan(page.indexOf('class="chip"'));
+    expect(page.indexOf('class="content"')).toBeLessThan(page.indexOf("layer layer-sparkles"));
+    expect(page.indexOf("layer layer-sparkles")).toBeLessThan(page.indexOf("layer layer-top-glare"));
+    expect(page.indexOf("layer layer-top-glare")).toBeLessThan(page.indexOf("layer layer-rim"));
+  });
+
+  it("ホロは黒いカード上のoverlayではなく明るい素材面として発色する", () => {
+    expect(page).toContain(".layer-base");
+    expect(page).toContain("linear-gradient(135deg");
+    expect(page).toContain("radial-gradient(120% 90% at 22% 18%");
+    expect(page).not.toContain(".layer-base {\n\t\t\t\tz-index: 0;\n\t\t\t\tbackground: #0a0a0a;");
+
+    expect(page).toContain("mix-blend-mode: screen");
+    expect(page).toContain("mix-blend-mode: plus-lighter");
+    expect(page).not.toContain("mix-blend-mode: color-dodge");
+    expect(page).toContain("opacity: calc(0.48 + 0.38 * var(--hyp))");
+  });
+
+  it("粒子は規則的なrepeating patternではなく不規則な固定spotで作る", () => {
+    const sparklesBlock = page.match(/\.layer-sparkles \{[\s\S]*?\n\t\t\t\}/)?.[0] ?? "";
+    const sparkleAfterBlock = page.match(/\.layer-sparkles::after \{[\s\S]*?\n\t\t\t\}/)?.[0] ?? "";
+
+    expect(sparklesBlock).toContain("22% 18%");
+    expect(sparklesBlock).toContain("73% 28%");
+    expect(sparklesBlock).toContain("84% 72%");
+    expect(sparkleAfterBlock).toContain("13% 64%");
+    expect(sparklesBlock + sparkleAfterBlock).not.toContain("repeating-");
   });
 
   it("Tweakpaneでレアリティプリセットを切り替えられる", () => {

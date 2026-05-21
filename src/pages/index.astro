@@ -19,7 +19,7 @@ const base = (import.meta.env.BASE_URL ?? "/").replace(/\/?$/, "/");
 				--tx: 0px;
 				--ty: 0px;
 				--s: 1;
-				--hyp: 0.5;
+				--hyp: 0.55;
 				--light-strength: 1;
 				color-scheme: dark;
 			}
@@ -163,7 +163,11 @@ const base = (import.meta.env.BASE_URL ?? "/").replace(/\/?$/, "/");
 
 			.layer-base {
 				z-index: 0;
-				background: #0a0a0a;
+				background:
+					radial-gradient(120% 90% at 22% 18%, rgba(92, 215, 255, 0.32), transparent 48%),
+					radial-gradient(100% 90% at 76% 24%, rgba(255, 116, 230, 0.28), transparent 52%),
+					radial-gradient(110% 95% at 54% 86%, rgba(255, 230, 128, 0.22), transparent 58%),
+					linear-gradient(135deg, #172033 0%, #1b2138 42%, #20243a 68%, #131927 100%);
 				transform: translateZ(2px);
 			}
 
@@ -191,10 +195,11 @@ const base = (import.meta.env.BASE_URL ?? "/").replace(/\/?$/, "/");
 					);
 				background-size: 140% 140%, 170% 170%, 120% 120%;
 				background-position: var(--posx) var(--posy);
-				background-blend-mode: screen, color-dodge, screen;
-				mix-blend-mode: color-dodge;
-				opacity: calc(0.22 + 0.58 * var(--hyp));
-				filter: saturate(2.2) contrast(1.45) brightness(1.18);
+				background-blend-mode: screen, screen, screen;
+				mix-blend-mode: screen;
+				mix-blend-mode: plus-lighter;
+				opacity: calc(0.48 + 0.38 * var(--hyp));
+				filter: saturate(2.4) contrast(1.28) brightness(1.24);
 				transform: translateZ(5px);
 			}
 
@@ -225,21 +230,61 @@ const base = (import.meta.env.BASE_URL ?? "/").replace(/\/?$/, "/");
 			}
 
 			.layer-sparkles {
-				z-index: 3;
+				z-index: 5;
 				background:
-					radial-gradient(circle, rgba(255, 255, 255, 0.95) 0 1px, transparent 1.8px),
-					radial-gradient(circle, rgba(140, 220, 255, 0.9) 0 1px, transparent 2px),
-					radial-gradient(circle, rgba(255, 165, 240, 0.85) 0 1px, transparent 2px);
-				background-size: 23px 23px, 37px 37px, 53px 53px;
-				background-position:
-					var(--posx) var(--posy),
-					calc(100% - var(--posx)) var(--posy),
-					var(--posx) calc(100% - var(--posy));
+					radial-gradient(circle at 22% 18%, rgba(255, 255, 255, 0.98) 0 1.2px, transparent 2.8px),
+					radial-gradient(circle at 73% 28%, rgba(140, 230, 255, 0.9) 0 1px, transparent 2.6px),
+					radial-gradient(circle at 84% 72%, rgba(255, 180, 245, 0.86) 0 1.4px, transparent 3px),
+					radial-gradient(circle at 39% 82%, rgba(255, 246, 156, 0.9) 0 1px, transparent 2.4px),
+					radial-gradient(circle at 58% 46%, rgba(255, 255, 255, 0.72) 0 0.8px, transparent 2.2px);
+				background-size: 105% 105%;
+				background-position: var(--posx) var(--posy);
+				background-repeat: no-repeat;
 				mix-blend-mode: screen;
-				opacity: calc(0.12 + 0.62 * var(--hyp));
-				filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.85)) brightness(1.6);
-				transform: translateZ(9px);
+				opacity: calc(0.22 + 0.52 * var(--hyp));
+				filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.9)) brightness(1.8);
+				transform: translateZ(12px);
 				animation: sparkle-twinkle 900ms steps(2, end) infinite;
+			}
+
+			.layer-sparkles::after {
+				content: "";
+				position: absolute;
+				inset: 0;
+				border-radius: inherit;
+				background:
+					radial-gradient(circle at 13% 64%, rgba(255, 255, 255, 0.86) 0 0.9px, transparent 2px),
+					radial-gradient(circle at 47% 21%, rgba(170, 225, 255, 0.78) 0 1px, transparent 2.6px),
+					radial-gradient(circle at 67% 63%, rgba(255, 150, 238, 0.72) 0 0.9px, transparent 2.3px),
+					radial-gradient(circle at 31% 38%, rgba(255, 245, 170, 0.74) 0 0.8px, transparent 2px);
+				background-repeat: no-repeat;
+				transform: translateZ(0);
+			}
+
+			.layer-top-glare {
+				z-index: 6;
+				background:
+					linear-gradient(
+						112deg,
+						transparent 0 20%,
+						rgba(255, 255, 255, 0.12) 35%,
+						rgba(255, 255, 255, 0.55) 45%,
+						rgba(120, 230, 255, 0.18) 52%,
+						transparent 68%
+					),
+					radial-gradient(
+						220px 150px at var(--mx) var(--my),
+						rgba(255, 255, 255, 0.38),
+						transparent 72%
+					);
+				background-size: 240% 240%, 100% 100%;
+				background-position:
+					calc(100% - var(--posx)) calc(100% - var(--posy)),
+					var(--mx) var(--my);
+				mix-blend-mode: screen;
+				opacity: calc(0.18 + 0.34 * var(--hyp));
+				filter: blur(0.18px);
+				transform: translateZ(13px);
 			}
 
 			@keyframes sparkle-twinkle {
@@ -263,7 +308,7 @@ const base = (import.meta.env.BASE_URL ?? "/").replace(/\/?$/, "/");
 					var(--rim-glow-color-2) 32%,
 					var(--rim-glow-color-3) 58%
 				);
-				z-index: 5;
+				z-index: 7;
 				padding: 1px;
 				-webkit-mask:
 					linear-gradient(#000 0 0) content-box,
@@ -674,7 +719,6 @@ const base = (import.meta.env.BASE_URL ?? "/").replace(/\/?$/, "/");
 						<div class="layer layer-base"></div>
 						<div class="layer layer-holo"></div>
 						<div class="layer layer-glare"></div>
-						<div class="layer layer-sparkles"></div>
 						<div class="chip" aria-hidden="true">
 							<span class="chip__shine" aria-hidden="true"></span>
 						</div>
@@ -696,6 +740,8 @@ const base = (import.meta.env.BASE_URL ?? "/").replace(/\/?$/, "/");
 								</div>
 							</div>
 						</div>
+						<div class="layer layer-sparkles"></div>
+						<div class="layer layer-top-glare"></div>
 						<div class="layer layer-rim"></div>
 					</div>
 				</div>
