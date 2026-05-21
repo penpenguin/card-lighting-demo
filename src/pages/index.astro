@@ -203,27 +203,16 @@ const base = (import.meta.env.BASE_URL ?? "/").replace(/\/?$/, "/");
 
 			.layer-glare {
 				z-index: 3;
-				background:
-					linear-gradient(
-						115deg,
-						transparent 0 30%,
-						rgba(255, 255, 255, 0.18) 42%,
-						rgba(255, 255, 255, 0.88) 48%,
-						rgba(255, 255, 255, 0.18) 55%,
-						transparent 70%
-					),
-					radial-gradient(
-						180px 120px at var(--mx) var(--my),
-						rgba(255, 255, 255, 0.72),
-						transparent 68%
-					);
+				background: var(--surface-shine-bg);
 				background-size: 220% 220%, 100% 100%;
 				background-position:
 					calc(100% - var(--posx)) calc(100% - var(--posy)),
 					var(--mx) var(--my);
-				mix-blend-mode: screen;
-				opacity: calc(0.08 + 0.42 * var(--hyp));
-				filter: blur(0.2px);
+				mix-blend-mode: var(--surface-shine-blend, screen);
+				opacity: calc(0.04 + 0.22 * var(--hyp));
+				filter: var(--surface-shine-filter);
+				-webkit-mask-image: radial-gradient(190px 130px at var(--mx) var(--my), #000 0 28%, transparent 72%);
+				mask-image: radial-gradient(190px 130px at var(--mx) var(--my), #000 0 28%, transparent 72%);
 				transform: none;
 			}
 
