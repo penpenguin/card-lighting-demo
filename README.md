@@ -29,7 +29,6 @@ npm install
 | `npm run dev`   | 開発サーバーを起動（`localhost:4321`）      |
 | `npm run build` | 本番ビルド（`./dist/`）                     |
 | `npm run preview` | ビルド結果をローカルで確認                |
-| `npm run bundle` | `card-lighting.ts` をJSにバンドル         |
 | `npm test`      | Vitest のテストを実行                       |
 | `npm run check` | Astro の型/構文チェック                     |
 
@@ -43,5 +42,5 @@ GitHub Pages 配下ではルートが `/<repo>` になるため、`base` と `si
 BASE_PATH=/<repo> SITE_URL=https://<user>.github.io npm run build
 ```
 
-`npm run dev` / `npm run build` の前に `npm run bundle` が自動実行され、`public/scripts/card-lighting.js` が生成されます。
-`src/pages/index.astro` では `import.meta.env.BASE_URL` を使って `scripts/card-lighting.js` を参照します。
+`src/pages/index.astro` では `src/scripts/card-lighting.ts` を Astro-managed local script として読み込みます。
+TypeScript の処理、npm import のバンドル、GitHub Pages 配下の asset path 解決は Astro/Vite に任せます。
