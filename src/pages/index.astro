@@ -19,7 +19,7 @@ const base = (import.meta.env.BASE_URL ?? "/").replace(/\/?$/, "/");
 				--tx: 0px;
 				--ty: 0px;
 				--s: 1;
-				--hyp: 0.5;
+				--hyp: 0.35;
 				--light-strength: 1;
 				color-scheme: dark;
 			}
@@ -110,6 +110,35 @@ const base = (import.meta.env.BASE_URL ?? "/").replace(/\/?$/, "/");
 				--rim-glow-color-2: rgba(160, 210, 255, 0.7);
 				--rim-glow-color-3: rgba(255, 255, 255, 0);
 				--rim-glow-opacity: 0.24;
+				--holo-texture-bg:
+					repeating-linear-gradient(
+						115deg,
+						transparent 0 8px,
+						rgba(255, 255, 255, 0.08) 9px,
+						transparent 11px 18px
+					);
+				--holo-texture-size: 120% 120%;
+				--holo-texture-position: var(--posx) var(--posy);
+				--holo-texture-blend: screen;
+				--holo-texture-opacity: calc(0.04 + 0.08 * var(--hyp));
+				--holo-texture-filter: none;
+				--surface-shine-bg:
+					linear-gradient(115deg, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0)),
+					radial-gradient(220px 150px at var(--mx) var(--my), rgba(255, 255, 255, 0.26), transparent 72%);
+				--surface-shine-blend: screen;
+				--surface-shine-filter: saturate(1.8) contrast(1.25) brightness(1.1);
+				--surface-shine-opacity: calc(0.12 + 0.48 * var(--hyp));
+				--surface-shine-size: 260% 260%, 180% 180%;
+				--surface-shine-position:
+					calc(100% - var(--posx)) calc(100% - var(--posy)),
+					var(--mx) var(--my);
+				--surface-shine-mask:
+					linear-gradient(112deg, transparent 0 39%, #000 43%, #000 48%, transparent 53%),
+					radial-gradient(220px 150px at var(--mx) var(--my), #000 0 32%, transparent 72%);
+				--surface-shine-mask-size: 260% 260%, 100% 100%;
+				--surface-shine-mask-position:
+					calc(100% - var(--posx)) calc(100% - var(--posy)),
+					var(--mx) var(--my);
 				background: #0a0a0a;
 				box-shadow:
 					0 32px 80px rgba(0, 0, 0, 0.72),
@@ -119,6 +148,11 @@ const base = (import.meta.env.BASE_URL ?? "/").replace(/\/?$/, "/");
 				transition: box-shadow 260ms ease, transform 200ms ease;
 				overflow: visible;
 				z-index: 1;
+			}
+
+			.card,
+			.card__translater {
+				transform-style: flat;
 			}
 
 			.card:hover {
@@ -140,6 +174,11 @@ const base = (import.meta.env.BASE_URL ?? "/").replace(/\/?$/, "/");
 				inset: 0;
 				border-radius: var(--card-radius);
 				transform: rotateY(var(--ry)) rotateX(var(--rx));
+				transform-style: flat;
+				overflow: hidden;
+				isolation: isolate;
+				clip-path: inset(0 round var(--card-radius));
+				backface-visibility: hidden;
 			}
 
 			.layer {
@@ -147,17 +186,113 @@ const base = (import.meta.env.BASE_URL ?? "/").replace(/\/?$/, "/");
 				inset: 0;
 				border-radius: inherit;
 				pointer-events: none;
+				transform: none;
+				backface-visibility: hidden;
 			}
 
 			.layer-shadow {
+				z-index: 0;
 				background: radial-gradient(90% 120% at 50% 80%, rgba(0, 0, 0, 0.55), transparent 70%);
 				filter: blur(10px);
-				transform: translateZ(1px);
+				transform: none;
 			}
 
 			.layer-base {
-				background: #0a0a0a;
-				transform: translateZ(2px);
+				z-index: 1;
+				background:
+					radial-gradient(120% 90% at 22% 18%, rgba(92, 215, 255, 0.18), transparent 48%),
+					radial-gradient(100% 90% at 76% 24%, rgba(255, 116, 230, 0.14), transparent 52%),
+					radial-gradient(110% 95% at 54% 86%, rgba(255, 230, 128, 0.1), transparent 58%),
+					linear-gradient(135deg, #0d1320 0%, #111827 42%, #151826 68%, #090d16 100%);
+				transform: none;
+			}
+
+			.layer-holo {
+				z-index: 2;
+				background: var(--holo-texture-bg);
+				background-size: var(--holo-texture-size);
+				background-position: var(--holo-texture-position);
+				mix-blend-mode: var(--holo-texture-blend, screen);
+				opacity: var(--holo-texture-opacity);
+				filter: var(--holo-texture-filter, none);
+				transform: none;
+			}
+
+			.layer-glare {
+				z-index: 3;
+				background: var(--surface-shine-bg);
+				background-size: var(--surface-shine-size);
+				background-position: var(--surface-shine-position);
+				mix-blend-mode: var(--surface-shine-blend, screen);
+				opacity: calc(0.02 + 0.12 * var(--hyp));
+				filter: var(--surface-shine-filter);
+				-webkit-mask-image: radial-gradient(190px 130px at var(--mx) var(--my), #000 0 28%, transparent 72%);
+				mask-image: radial-gradient(190px 130px at var(--mx) var(--my), #000 0 28%, transparent 72%);
+				transform: none;
+			}
+
+			.layer-sparkles {
+				z-index: 5;
+				background:
+					radial-gradient(circle at 22% 18%, rgba(255, 255, 255, 0.98) 0 1.2px, transparent 2.8px),
+					radial-gradient(circle at 73% 28%, rgba(140, 230, 255, 0.9) 0 1px, transparent 2.6px),
+					radial-gradient(circle at 84% 72%, rgba(255, 180, 245, 0.86) 0 1.4px, transparent 3px),
+					radial-gradient(circle at 39% 82%, rgba(255, 246, 156, 0.9) 0 1px, transparent 2.4px),
+					radial-gradient(circle at 58% 46%, rgba(255, 255, 255, 0.72) 0 0.8px, transparent 2.2px);
+				background-size: 105% 105%;
+				background-position: var(--posx) var(--posy);
+				background-repeat: no-repeat;
+				mix-blend-mode: screen;
+				opacity: calc(0.04 + 0.38 * var(--hyp));
+				filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.82)) brightness(1.65);
+				-webkit-mask-image: radial-gradient(180px 130px at var(--mx) var(--my), #000 0 42%, transparent 78%);
+				mask-image: radial-gradient(180px 130px at var(--mx) var(--my), #000 0 42%, transparent 78%);
+				transform: none;
+				animation: sparkle-twinkle 900ms steps(2, end) infinite;
+			}
+
+			.layer-sparkles::after {
+				content: "";
+				position: absolute;
+				inset: 0;
+				border-radius: inherit;
+				background:
+					radial-gradient(circle at 13% 64%, rgba(255, 255, 255, 0.86) 0 0.9px, transparent 2px),
+					radial-gradient(circle at 47% 21%, rgba(170, 225, 255, 0.78) 0 1px, transparent 2.6px),
+					radial-gradient(circle at 67% 63%, rgba(255, 150, 238, 0.72) 0 0.9px, transparent 2.3px),
+					radial-gradient(circle at 31% 38%, rgba(255, 245, 170, 0.74) 0 0.8px, transparent 2px);
+				background-repeat: no-repeat;
+				transform: none;
+			}
+
+			.layer-top-glare {
+				z-index: 6;
+				background: var(--surface-shine-bg);
+				background-size: var(--surface-shine-size);
+				background-position: var(--surface-shine-position);
+				mix-blend-mode: var(--surface-shine-blend, screen);
+				opacity: var(--surface-shine-opacity);
+				filter: var(--surface-shine-filter);
+				-webkit-mask-image: var(--surface-shine-mask);
+				mask-image: var(--surface-shine-mask);
+				-webkit-mask-size: var(--surface-shine-mask-size);
+				mask-size: var(--surface-shine-mask-size);
+				-webkit-mask-position: var(--surface-shine-mask-position);
+				mask-position: var(--surface-shine-mask-position);
+				transform: none;
+			}
+
+			@keyframes sparkle-twinkle {
+				50% {
+					opacity: calc(0.08 + 0.52 * var(--hyp));
+					filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.9)) brightness(1.9);
+				}
+			}
+
+			.chip,
+			.number,
+			.content {
+				z-index: 4;
 			}
 
 			.layer-rim {
@@ -168,6 +303,7 @@ const base = (import.meta.env.BASE_URL ?? "/").replace(/\/?$/, "/");
 					var(--rim-glow-color-2) 32%,
 					var(--rim-glow-color-3) 58%
 				);
+				z-index: 7;
 				padding: 1px;
 				-webkit-mask:
 					linear-gradient(#000 0 0) content-box,
@@ -181,7 +317,7 @@ const base = (import.meta.env.BASE_URL ?? "/").replace(/\/?$/, "/");
 				mix-blend-mode: screen;
 				opacity: calc(var(--rim-glow-opacity, 0.24) + 0.6 * var(--hyp));
 				filter: none;
-				transform: translateZ(11px);
+				transform: none;
 			}
 
 			/* --- rare holo --- */
@@ -193,6 +329,20 @@ const base = (import.meta.env.BASE_URL ?? "/").replace(/\/?$/, "/");
 				--chip-shine-blend: soft-light, soft-light, screen;
 				--chip-shine-filter: brightness(calc((var(--hyp) + 0.7) * 0.6)) contrast(2.2);
 				--chip-shine-size: 220% 220%;
+				--surface-shine-bg:
+					repeating-linear-gradient(
+						112deg,
+						transparent 0 14px,
+						rgba(130, 200, 255, 0.28) 15px,
+						rgba(255, 244, 210, 0.2) 17px,
+						transparent 24px
+					),
+					linear-gradient(120deg, rgba(255, 130, 220, 0.2), rgba(140, 200, 255, 0.28), rgba(255, 240, 170, 0.2));
+				--surface-shine-mask:
+					linear-gradient(112deg, transparent 0 30%, #000 42%, #000 56%, transparent 72%),
+					radial-gradient(210px 140px at var(--mx) var(--my), #000 0 34%, transparent 74%);
+				--surface-shine-filter: saturate(1.8) contrast(1.2) brightness(1.08);
+				--surface-shine-opacity: calc(0.1 + 0.46 * var(--hyp));
 				--rim-glow-color-1: rgba(255, 244, 210, 0.96);
 				--rim-glow-color-2: rgba(130, 200, 255, 0.75);
 				--rim-glow-opacity: 0.26;
@@ -210,6 +360,35 @@ const base = (import.meta.env.BASE_URL ?? "/").replace(/\/?$/, "/");
 				--chip-shine-blend: color-dodge, screen, saturation;
 				--chip-shine-filter: brightness(calc(0.5 + var(--hyp) * 0.35)) saturate(1.3);
 				--chip-shine-size: 200% 200%;
+				--holo-texture-bg:
+					radial-gradient(circle at 18% 22%, rgba(255, 255, 255, 0.34) 0 1px, transparent 2.6px),
+					radial-gradient(circle at 52% 34%, rgba(120, 190, 255, 0.24) 0 1.4px, transparent 3.2px),
+					radial-gradient(circle at 78% 70%, rgba(255, 255, 255, 0.22) 0 1px, transparent 2.8px),
+					repeating-radial-gradient(circle at 50% 50%, rgba(120, 190, 255, 0.08) 0 1px, transparent 1px 7px);
+				--holo-texture-size: 130% 130%, 170% 170%, 150% 150%, 210% 210%;
+				--holo-texture-position:
+					var(--posx) var(--posy),
+					calc(100% - var(--posx)) var(--posy),
+					var(--posx) calc(100% - var(--posy)),
+					var(--mx) var(--my);
+				--holo-texture-opacity: calc(0.1 + 0.18 * var(--hyp));
+				--surface-shine-bg:
+					radial-gradient(circle at 20% 24%, rgba(255, 255, 255, 0.95) 0 1px, transparent 2px),
+					radial-gradient(circle at 62% 38%, rgba(120, 190, 255, 0.8) 0 1.2px, transparent 3px),
+					radial-gradient(circle at 76% 68%, rgba(255, 255, 255, 0.75) 0 1px, transparent 2.4px),
+					radial-gradient(150px 110px at var(--mx) var(--my), rgba(90, 170, 255, 0.48), transparent 70%);
+				--surface-shine-size: 120% 120%, 150% 150%, 180% 180%, 100% 100%;
+				--surface-shine-position:
+					var(--posx) var(--posy),
+					calc(100% - var(--posx)) var(--posy),
+					var(--posx) calc(100% - var(--posy)),
+					var(--mx) var(--my);
+				--surface-shine-mask:
+					radial-gradient(240px 160px at var(--mx) var(--my), #000 0 42%, transparent 76%);
+				--surface-shine-mask-size: 100% 100%;
+				--surface-shine-mask-position: var(--mx) var(--my);
+				--surface-shine-filter: saturate(1.8) contrast(1.4) brightness(1.16);
+				--surface-shine-opacity: calc(0.12 + 0.5 * var(--hyp));
 				--rim-glow-color-1: rgba(210, 240, 255, 0.96);
 				--rim-glow-color-2: rgba(90, 170, 255, 0.7);
 				--rim-glow-opacity: 0.28;
@@ -228,6 +407,34 @@ const base = (import.meta.env.BASE_URL ?? "/").replace(/\/?$/, "/");
 				--chip-shine-blend: screen, hard-light, overlay;
 				--chip-shine-filter: brightness(calc(0.55 + var(--hyp) * 0.4)) saturate(1.1);
 				--chip-shine-size: 210% 210%;
+				--holo-texture-bg:
+					repeating-linear-gradient(
+						96deg,
+						transparent 0 7px,
+						rgba(120, 220, 255, 0.16) 8px,
+						rgba(255, 180, 255, 0.13) 9px,
+						transparent 11px 18px
+					),
+					linear-gradient(90deg, rgba(255, 180, 255, 0.12), rgba(120, 220, 255, 0.14), rgba(255, 210, 150, 0.1));
+				--holo-texture-size: 150% 150%, 220% 220%;
+				--holo-texture-position:
+					calc(100% - var(--posx)) var(--posy),
+					var(--posx) var(--posy);
+				--holo-texture-opacity: calc(0.08 + 0.18 * var(--hyp));
+				--surface-shine-bg:
+					repeating-linear-gradient(
+						112deg,
+						transparent 0 10px,
+						rgba(120, 220, 255, 0.42) 11px,
+						rgba(255, 180, 255, 0.34) 13px,
+						transparent 18px
+					),
+					linear-gradient(90deg, rgba(255, 180, 255, 0.28), rgba(120, 220, 255, 0.32), rgba(255, 210, 150, 0.24));
+				--surface-shine-mask:
+					linear-gradient(112deg, transparent 0 25%, #000 38%, #000 58%, transparent 72%),
+					radial-gradient(190px 130px at var(--mx) var(--my), #000 0 36%, transparent 74%);
+				--surface-shine-filter: saturate(2.2) contrast(1.35) brightness(1.12);
+				--surface-shine-opacity: calc(0.1 + 0.5 * var(--hyp));
 				--rim-glow-color-1: rgba(245, 220, 255, 0.95);
 				--rim-glow-color-2: rgba(110, 210, 255, 0.7);
 				--rim-glow-opacity: 0.26;
@@ -244,6 +451,66 @@ const base = (import.meta.env.BASE_URL ?? "/").replace(/\/?$/, "/");
 				--chip-shine-blend: color-burn, screen, soft-light;
 				--chip-shine-filter: brightness(calc((var(--hyp) * 0.3) + 0.5));
 				--chip-shine-size: 220% 220%;
+				--holo-texture-bg:
+					repeating-linear-gradient(
+						58deg,
+						rgba(255, 120, 200, 0.12) 0 5px,
+						transparent 5px 17px
+					),
+					repeating-linear-gradient(
+						122deg,
+						transparent 0 10px,
+						rgba(120, 230, 255, 0.18) 11px,
+						rgba(240, 200, 255, 0.14) 14px,
+						transparent 22px
+					),
+					repeating-linear-gradient(
+						-34deg,
+						transparent 0 14px,
+						rgba(255, 255, 255, 0.1) 15px,
+						rgba(80, 210, 255, 0.16) 17px,
+						transparent 26px
+					),
+					radial-gradient(180px 130px at var(--mx) var(--my), rgba(255, 255, 255, 0.12), transparent 72%);
+				--holo-texture-size: 150% 150%, 170% 170%, 220% 220%, 100% 100%;
+				--holo-texture-position:
+					var(--posx) calc(100% - var(--posy)),
+					calc(100% - var(--posx)) var(--posy),
+					calc(50% + var(--rx) * 1.4px) calc(50% + var(--ry) * 1.4px),
+					var(--mx) var(--my);
+				--holo-texture-opacity: calc(0.12 + 0.22 * var(--hyp));
+				--surface-shine-bg:
+					repeating-linear-gradient(
+						64deg,
+						rgba(255, 120, 200, 0.18) 0 5px,
+						transparent 5px 16px
+					),
+					repeating-linear-gradient(
+						116deg,
+						transparent 0 12px,
+						rgba(120, 230, 255, 0.4) 13px,
+						rgba(240, 200, 255, 0.3) 15px,
+						transparent 24px
+					),
+					repeating-linear-gradient(
+						-34deg,
+						transparent 0 16px,
+						rgba(255, 255, 255, 0.18) 18px,
+						rgba(90, 230, 255, 0.28) 20px,
+						transparent 30px
+					),
+					radial-gradient(210px 145px at var(--mx) var(--my), rgba(255, 255, 255, 0.18), transparent 72%);
+				--surface-shine-size: 150% 150%, 170% 170%, 220% 220%, 100% 100%;
+				--surface-shine-position:
+					var(--posx) calc(100% - var(--posy)),
+					calc(100% - var(--posx)) var(--posy),
+					calc(50% + var(--rx) * 1.4px) calc(50% + var(--ry) * 1.4px),
+					var(--mx) var(--my);
+				--surface-shine-mask:
+					linear-gradient(116deg, transparent 0 20%, #000 36%, #000 64%, transparent 82%),
+					radial-gradient(220px 150px at var(--mx) var(--my), #000 0 32%, transparent 72%);
+				--surface-shine-filter: saturate(2.15) contrast(1.36) brightness(1.1);
+				--surface-shine-opacity: calc(0.1 + 0.5 * var(--hyp));
 				--rim-glow-color-1: rgba(255, 210, 250, 0.97);
 				--rim-glow-color-2: rgba(120, 230, 255, 0.75);
 				--rim-glow-opacity: 0.3;
@@ -259,6 +526,36 @@ const base = (import.meta.env.BASE_URL ?? "/").replace(/\/?$/, "/");
 				--chip-shine-blend: soft-light, hue, hard-light;
 				--chip-shine-filter: brightness(calc(0.6 + var(--hyp) * 0.35));
 				--chip-shine-size: 210% 210%;
+				--holo-texture-bg:
+					radial-gradient(circle at 18% 22%, rgba(255, 248, 222, 0.36) 0 1.4px, transparent 3.8px),
+					radial-gradient(circle at 78% 28%, rgba(230, 245, 255, 0.3) 0 1.1px, transparent 3.4px),
+					radial-gradient(circle at 48% 74%, rgba(255, 230, 250, 0.28) 0 1.2px, transparent 3.6px),
+					conic-gradient(from calc(0.12turn) at var(--mx) var(--my), transparent 0 0.08turn, rgba(255, 240, 210, 0.16) 0.1turn, transparent 0.16turn, rgba(150, 210, 255, 0.13) 0.22turn, transparent 0.3turn, rgba(255, 180, 220, 0.12) 0.38turn, transparent 0.46turn, rgba(255, 240, 210, 0.16) 0.52turn, transparent 0.64turn),
+					radial-gradient(190px 140px at var(--mx) var(--my), rgba(255, 240, 210, 0.12), transparent 74%);
+				--holo-texture-size: 100% 100%, 100% 100%, 100% 100%, 180% 180%, 100% 100%;
+				--holo-texture-position:
+					calc(50% + var(--rx) * 0.8px) calc(50% + var(--ry) * 0.8px),
+					calc(50% - var(--ry) * 0.6px) calc(50% + var(--rx) * 0.6px),
+					calc(50% + var(--ry) * 0.7px) calc(50% - var(--rx) * 0.7px),
+					calc(100% - var(--posx)) calc(100% - var(--posy)),
+					var(--mx) var(--my);
+				--holo-texture-opacity: calc(0.1 + 0.2 * var(--hyp));
+				--surface-shine-bg:
+					radial-gradient(90px 70px at var(--mx) var(--my), rgba(255, 255, 255, 0.34), transparent 68%),
+					conic-gradient(from calc(0.12turn) at var(--mx) var(--my), transparent 0 0.1turn, rgba(255, 240, 210, 0.3) 0.14turn, transparent 0.2turn, rgba(150, 210, 255, 0.24) 0.28turn, transparent 0.36turn, rgba(255, 180, 220, 0.22) 0.44turn, transparent 0.54turn),
+					linear-gradient(135deg, rgba(255, 248, 222, 0.22), rgba(210, 230, 255, 0.12), rgba(255, 255, 255, 0.18)),
+					radial-gradient(170px 120px at var(--mx) var(--my), rgba(255, 255, 255, 0.32), transparent 72%);
+				--surface-shine-size: 100% 100%, 200% 200%, 140% 140%, 100% 100%;
+				--surface-shine-position:
+					var(--mx) var(--my),
+					calc(100% - var(--posx)) calc(100% - var(--posy)),
+					var(--posx) var(--posy),
+					var(--mx) var(--my);
+				--surface-shine-mask:
+					radial-gradient(230px 155px at var(--mx) var(--my), #000 0 38%, transparent 76%),
+					radial-gradient(210px 140px at var(--mx) var(--my), #000 0 34%, transparent 74%);
+				--surface-shine-filter: saturate(1.8) contrast(1.24) brightness(1.1);
+				--surface-shine-opacity: calc(0.1 + 0.48 * var(--hyp));
 				--rim-glow-color-1: rgba(255, 240, 210, 0.97);
 				--rim-glow-color-2: rgba(150, 210, 255, 0.68);
 				--rim-glow-opacity: 0.28;
@@ -275,6 +572,18 @@ const base = (import.meta.env.BASE_URL ?? "/").replace(/\/?$/, "/");
 				--chip-shine-blend: exclusion, hue, hard-light;
 				--chip-shine-filter: brightness(calc(0.5 + var(--hyp) * 0.4));
 				--chip-shine-size: 210% 210%;
+				--surface-shine-bg:
+					repeating-linear-gradient(
+						104deg,
+						rgba(255, 210, 140, 0.2) 0 3px,
+						transparent 3px 12px
+					),
+					linear-gradient(110deg, rgba(255, 210, 140, 0.28), rgba(120, 200, 255, 0.3), rgba(255, 120, 200, 0.22));
+				--surface-shine-mask:
+					linear-gradient(104deg, transparent 0 28%, #000 40%, #000 62%, transparent 78%),
+					radial-gradient(200px 140px at var(--mx) var(--my), #000 0 30%, transparent 72%);
+				--surface-shine-filter: saturate(1.85) contrast(1.36) brightness(1.08);
+				--surface-shine-opacity: calc(0.09 + 0.46 * var(--hyp));
 				--rim-glow-color-1: rgba(255, 220, 170, 0.95);
 				--rim-glow-color-2: rgba(150, 200, 255, 0.62);
 				--rim-glow-opacity: 0.27;
@@ -291,6 +600,15 @@ const base = (import.meta.env.BASE_URL ?? "/").replace(/\/?$/, "/");
 				--chip-shine-blend: difference, hue, hard-light;
 				--chip-shine-filter: brightness(calc(0.55 + var(--hyp) * 0.35));
 				--chip-shine-size: 210% 210%;
+				--surface-shine-bg:
+					radial-gradient(170px 110px at var(--mx) var(--my), rgba(255, 255, 255, 0.28), transparent 70%),
+					linear-gradient(115deg, rgba(255, 210, 140, 0.2), rgba(120, 200, 255, 0.26), rgba(255, 120, 200, 0.2));
+				--surface-shine-mask:
+					radial-gradient(220px 145px at var(--mx) var(--my), #000 0 36%, transparent 76%);
+				--surface-shine-mask-size: 100% 100%;
+				--surface-shine-mask-position: var(--mx) var(--my);
+				--surface-shine-filter: saturate(1.8) contrast(1.2) brightness(1.08);
+				--surface-shine-opacity: calc(0.09 + 0.46 * var(--hyp));
 				--rim-glow-color-1: rgba(240, 220, 200, 0.92);
 				--rim-glow-color-2: rgba(140, 210, 255, 0.68);
 				--rim-glow-opacity: 0.27;
@@ -307,6 +625,26 @@ const base = (import.meta.env.BASE_URL ?? "/").replace(/\/?$/, "/");
 				--chip-shine-blend: color-burn, soft-light, screen;
 				--chip-shine-filter: brightness(calc(0.6 + var(--hyp) * 0.4));
 				--chip-shine-size: 220% 220%;
+				--holo-texture-bg:
+					linear-gradient(90deg, rgba(255, 80, 220, 0.14), rgba(90, 230, 255, 0.14), rgba(255, 245, 120, 0.12), rgba(120, 90, 255, 0.12), rgba(255, 80, 220, 0.14)),
+					conic-gradient(from calc(0.05turn) at 50% 50%, rgba(255, 80, 220, 0.18), rgba(90, 230, 255, 0.16), rgba(255, 245, 120, 0.16), rgba(120, 90, 255, 0.14), rgba(255, 80, 220, 0.18));
+				--holo-texture-size: 220% 220%, 180% 180%;
+				--holo-texture-position:
+					var(--posx) var(--posy),
+					calc(100% - var(--posx)) calc(100% - var(--posy));
+				--holo-texture-opacity: calc(0.12 + 0.16 * var(--hyp));
+				--surface-shine-bg:
+					conic-gradient(from calc(0.05turn) at 50% 50%, rgba(255, 80, 220, 0.56), rgba(90, 230, 255, 0.52), rgba(255, 245, 120, 0.52), rgba(120, 90, 255, 0.48), rgba(255, 80, 220, 0.56)),
+					linear-gradient(90deg, rgba(255, 80, 220, 0.26), rgba(90, 230, 255, 0.22), rgba(255, 245, 120, 0.22), rgba(120, 90, 255, 0.2), rgba(255, 80, 220, 0.26));
+				--surface-shine-mask:
+					linear-gradient(90deg, #000 0 18%, rgba(0, 0, 0, 0.88) 34%, #000 52%, rgba(0, 0, 0, 0.88) 72%, transparent 96%),
+					radial-gradient(280px 180px at var(--mx) var(--my), #000 0 28%, transparent 78%);
+				--surface-shine-mask-size: 220% 220%, 100% 100%;
+				--surface-shine-mask-position:
+					var(--posx) var(--posy),
+					calc(100% - var(--posx)) calc(100% - var(--posy));
+				--surface-shine-filter: saturate(2.35) contrast(1.18) brightness(1.08);
+				--surface-shine-opacity: calc(0.12 + 0.42 * var(--hyp));
 				--rim-glow-color-1: rgba(255, 220, 255, 0.96);
 				--rim-glow-color-2: rgba(140, 220, 255, 0.72);
 				--rim-glow-opacity: 0.3;
@@ -324,6 +662,18 @@ const base = (import.meta.env.BASE_URL ?? "/").replace(/\/?$/, "/");
 				--chip-shine-blend: color-burn, darken, screen;
 				--chip-shine-filter: brightness(calc(0.6 + var(--hyp) * 0.45));
 				--chip-shine-size: 220% 220%;
+				--surface-shine-bg:
+					repeating-linear-gradient(
+						45deg,
+						rgba(255, 225, 150, 0.18) 0 2px,
+						transparent 2px 8px
+					),
+					linear-gradient(120deg, rgba(255, 210, 140, 0.38), rgba(200, 160, 80, 0.28), rgba(255, 235, 170, 0.22));
+				--surface-shine-mask:
+					linear-gradient(120deg, transparent 0 34%, #000 44%, #000 54%, transparent 70%),
+					radial-gradient(200px 140px at var(--mx) var(--my), #000 0 30%, transparent 72%);
+				--surface-shine-filter: saturate(1.25) contrast(1.5) brightness(1.05);
+				--surface-shine-opacity: calc(0.08 + 0.42 * var(--hyp));
 				--rim-glow-color-1: rgba(255, 220, 170, 0.95);
 				--rim-glow-color-2: rgba(200, 160, 80, 0.7);
 				--rim-glow-opacity: 0.28;
@@ -340,6 +690,29 @@ const base = (import.meta.env.BASE_URL ?? "/").replace(/\/?$/, "/");
 				--chip-shine-blend: color-dodge, color-dodge, screen;
 				--chip-shine-filter: contrast(3) saturate(1.2);
 				--chip-shine-size: 240% 240%;
+				--holo-texture-bg:
+					radial-gradient(90px 70px at var(--mx) var(--my), rgba(255, 255, 255, 0.24), transparent 68%),
+					conic-gradient(from calc(0.35turn) at var(--mx) var(--my), rgba(255, 80, 220, 0.16), transparent 0.12turn, rgba(90, 230, 255, 0.14) 0.18turn, transparent 0.3turn, rgba(255, 245, 120, 0.14) 0.38turn, transparent 0.5turn, rgba(255, 80, 220, 0.16) 0.62turn, transparent 0.76turn);
+				--holo-texture-size: 100% 100%, 200% 200%;
+				--holo-texture-position:
+					var(--mx) var(--my),
+					calc(100% - var(--posx)) calc(100% - var(--posy));
+				--holo-texture-opacity: calc(0.14 + 0.24 * var(--hyp));
+				--surface-shine-bg:
+					radial-gradient(90px 70px at var(--mx) var(--my), rgba(255, 255, 255, 0.92), transparent 68%),
+					conic-gradient(from calc(0.35turn) at var(--mx) var(--my), rgba(255, 80, 220, 0.78), rgba(90, 230, 255, 0.74), rgba(255, 245, 120, 0.72), rgba(120, 90, 255, 0.66), rgba(255, 80, 220, 0.78)),
+					linear-gradient(112deg, transparent 0 39%, rgba(255, 180, 240, 0.22) 43%, rgba(255, 255, 255, 0.86) 46%, rgba(120, 220, 255, 0.5) 48%, transparent 58%);
+				--surface-shine-mask:
+					radial-gradient(150px 110px at var(--mx) var(--my), #000 0 30%, transparent 74%),
+					radial-gradient(230px 150px at var(--mx) var(--my), #000 0 34%, transparent 72%),
+					linear-gradient(112deg, transparent 0 36%, #000 43%, #000 52%, transparent 64%);
+				--surface-shine-mask-size: 100% 100%, 100% 100%, 260% 260%;
+				--surface-shine-mask-position:
+					var(--mx) var(--my),
+					var(--mx) var(--my),
+					calc(100% - var(--posx)) calc(100% - var(--posy));
+				--surface-shine-filter: saturate(2.5) contrast(1.35) brightness(1.16);
+				--surface-shine-opacity: calc(0.18 + 0.62 * var(--hyp));
 				--rim-glow-color-1: rgba(255, 230, 210, 0.98);
 				--rim-glow-color-2: rgba(255, 150, 230, 0.78);
 				--rim-glow-opacity: 0.3;
@@ -357,6 +730,20 @@ const base = (import.meta.env.BASE_URL ?? "/").replace(/\/?$/, "/");
 				--chip-shine-blend: color-dodge, screen, screen;
 				--chip-shine-filter: brightness(calc(0.6 + var(--hyp) * 0.45));
 				--chip-shine-size: 210% 210%;
+				--surface-shine-bg:
+					radial-gradient(190px 130px at var(--mx) var(--my), rgba(255, 255, 255, 0.34), transparent 70%),
+					repeating-linear-gradient(
+						115deg,
+						transparent 0 16px,
+						rgba(255, 220, 255, 0.28) 17px,
+						rgba(140, 200, 255, 0.24) 20px,
+						transparent 32px
+					);
+				--surface-shine-mask:
+					radial-gradient(230px 155px at var(--mx) var(--my), #000 0 38%, transparent 76%),
+					linear-gradient(115deg, transparent 0 32%, #000 44%, #000 60%, transparent 78%);
+				--surface-shine-filter: saturate(2) contrast(1.24) brightness(1.12);
+				--surface-shine-opacity: calc(0.12 + 0.5 * var(--hyp));
 				--rim-glow-color-1: rgba(255, 230, 255, 0.97);
 				--rim-glow-color-2: rgba(140, 200, 255, 0.75);
 				--rim-glow-opacity: 0.29;
@@ -373,6 +760,22 @@ const base = (import.meta.env.BASE_URL ?? "/").replace(/\/?$/, "/");
 				--chip-shine-blend: hue, hard-light, exclusion;
 				--chip-shine-filter: brightness(calc(0.55 + var(--hyp) * 0.5));
 				--chip-shine-size: 200% 200%;
+				--surface-shine-bg:
+					radial-gradient(260px 190px at var(--mx) var(--my), rgba(255, 255, 255, 0.28), transparent 72%),
+					radial-gradient(82% 64% at calc(100% - var(--posx)) var(--posy), rgba(255, 140, 220, 0.2), transparent 68%),
+					radial-gradient(76% 58% at var(--posx) calc(100% - var(--posy)), rgba(120, 220, 255, 0.18), transparent 70%),
+					linear-gradient(115deg, rgba(255, 255, 255, 0.08), rgba(255, 140, 220, 0.14), rgba(120, 220, 255, 0.12));
+				--surface-shine-size: 100% 100%, 160% 160%, 150% 150%, 180% 180%;
+				--surface-shine-position:
+					var(--mx) var(--my),
+					calc(100% - var(--posx)) var(--posy),
+					var(--posx) calc(100% - var(--posy)),
+					var(--posx) var(--posy);
+				--surface-shine-mask:
+					radial-gradient(280px 200px at var(--mx) var(--my), #000 0 44%, transparent 78%),
+					linear-gradient(115deg, transparent 0 12%, #000 34%, #000 70%, transparent 92%);
+				--surface-shine-filter: saturate(2.1) contrast(1.28) brightness(1.1);
+				--surface-shine-opacity: calc(0.11 + 0.48 * var(--hyp));
 				--rim-glow-color-1: rgba(240, 210, 255, 0.96);
 				--rim-glow-color-2: rgba(130, 220, 255, 0.72);
 				--rim-glow-opacity: 0.28;
@@ -537,6 +940,10 @@ const base = (import.meta.env.BASE_URL ?? "/").replace(/\/?$/, "/");
 					transition: none;
 					transform: none;
 				}
+
+				.layer-sparkles {
+					animation: none;
+				}
 			}
 
 			.pane-host {
@@ -563,15 +970,17 @@ const base = (import.meta.env.BASE_URL ?? "/").replace(/\/?$/, "/");
 			<div
 				class="card"
 				id="card"
-				data-rarity="rare holo"
+				data-rarity="radiant"
 				data-supertype="pokemon"
-				data-subtypes="basic"
+				data-subtypes="radiant"
 				data-gallery="false"
 			>
 				<div class="card__translater">
 					<div class="card__rotator">
 						<div class="layer layer-shadow"></div>
 						<div class="layer layer-base"></div>
+						<div class="layer layer-holo"></div>
+						<div class="layer layer-glare"></div>
 						<div class="chip" aria-hidden="true">
 							<span class="chip__shine" aria-hidden="true"></span>
 						</div>
@@ -593,6 +1002,8 @@ const base = (import.meta.env.BASE_URL ?? "/").replace(/\/?$/, "/");
 								</div>
 							</div>
 						</div>
+						<div class="layer layer-sparkles"></div>
+						<div class="layer layer-top-glare"></div>
 						<div class="layer layer-rim"></div>
 					</div>
 				</div>
