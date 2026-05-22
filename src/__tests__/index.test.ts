@@ -69,6 +69,8 @@ describe("ポケモンカード風ホロ表現", () => {
 
     expect(glareBlock).toContain("background: var(--surface-shine-bg)");
     expect(glareBlock).toContain("mix-blend-mode: var(--surface-shine-blend, screen)");
+    expect(glareBlock).toContain("background-size: var(--surface-shine-size)");
+    expect(glareBlock).toContain("background-position: var(--surface-shine-position)");
     expect(glareBlock).toContain("opacity: calc(0.02 + 0.12 * var(--hyp))");
     expect(glareBlock).toContain("filter: var(--surface-shine-filter)");
     expect(glareBlock).toContain("mask-image: radial-gradient(190px 130px at var(--mx) var(--my)");
@@ -77,7 +79,7 @@ describe("ポケモンカード風ホロ表現", () => {
     expect(glareBlock).not.toContain("rgba(255, 255, 255, 0.72)");
 
     expect(page).toContain("--holo-texture-bg:");
-    expect(page).toContain("--holo-texture-opacity: calc(0.08 + 0.12 * var(--hyp))");
+    expect(page).toContain("--holo-texture-opacity: calc(0.04 + 0.08 * var(--hyp))");
     expect(page).toContain("--holo-texture-size: 120% 120%");
     expect(page).toContain("--holo-texture-position: var(--posx) var(--posy)");
 
@@ -442,6 +444,8 @@ describe("ポケモンカード風ホロ表現", () => {
     const vBlock = page.match(/\.card\[data-rarity\*="rare holo v"\] \{[\s\S]*?\n\t\t\t\}/)?.[0] ?? "";
     const vmaxBlock = page.match(/\.card\[data-rarity="rare holo vmax"\] \{[\s\S]*?\n\t\t\t\}/)?.[0] ?? "";
     const vstarBlock = page.match(/\.card\[data-rarity="rare holo vstar"\]\[data-supertype="pokemon"\] \{[\s\S]*?\n\t\t\t\}/)?.[0] ?? "";
+    const galleryVBlock = page.match(/\.card\[data-rarity="rare holo v"\]\[data-gallery="true"\] \{[\s\S]*?\n\t\t\t\}/)?.[0] ?? "";
+    const galleryVSurfaceBlock = galleryVBlock.match(/--surface-shine-bg:[\s\S]*?--surface-shine-mask:/)?.[0] ?? "";
 
     expect(vBlock).toContain("--holo-texture-bg:");
     expect(vBlock).toContain("repeating-linear-gradient(\n\t\t\t\t\t\t96deg");
@@ -450,10 +454,19 @@ describe("ポケモンカード風ホロ表現", () => {
     expect(vmaxBlock).toContain("--holo-texture-bg:");
     expect(vmaxBlock).toContain("repeating-linear-gradient(\n\t\t\t\t\t\t58deg");
     expect(vmaxBlock).toContain("repeating-linear-gradient(\n\t\t\t\t\t\t122deg");
+    expect(vmaxBlock).toContain("repeating-linear-gradient(\n\t\t\t\t\t\t-34deg");
+    expect(vmaxBlock).toContain("--surface-shine-size: 150% 150%, 170% 170%, 220% 220%");
 
     expect(vstarBlock).toContain("--holo-texture-bg:");
-    expect(vstarBlock).toContain("radial-gradient(circle at var(--mx) var(--my)");
+    expect(vstarBlock).toContain("radial-gradient(circle at 18% 22%");
     expect(vstarBlock).toContain("conic-gradient(from calc(0.12turn)");
+    expect(vstarBlock).toContain("rgba(255, 248, 222, 0.36)");
+    expect(vstarBlock).toContain("--surface-shine-size: 100% 100%, 200% 200%, 140% 140%");
+
+    expect(galleryVBlock).toContain("--surface-shine-bg:");
+    expect(galleryVBlock).toContain("radial-gradient(260px 190px at var(--mx) var(--my)");
+    expect(galleryVBlock).toContain("linear-gradient(115deg, rgba(255, 255, 255, 0.08)");
+    expect(galleryVSurfaceBlock).not.toContain("repeating-linear-gradient");
   });
 
   it("Rainbowは広い色相帯、Radiantは光源周辺の強いバーストとして分ける", () => {
