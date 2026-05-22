@@ -5,6 +5,7 @@ describe("ポケモンカード風ホロ表現", () => {
   const page = readFileSync("src/pages/index.astro", "utf-8");
   const script = readFileSync("src/scripts/card-lighting.ts", "utf-8");
   const astroConfig = readFileSync("astro.config.mjs", "utf-8");
+  const packageJson = JSON.parse(readFileSync("package.json", "utf-8")) as { scripts: Record<string, string> };
 
   it("カード本体は元のデモカードをそのまま描画する（iframeを使わない）", () => {
     expect(page).not.toContain("<iframe");
@@ -160,11 +161,19 @@ describe("ポケモンカード風ホロ表現", () => {
     expect(astroConfig).toContain("site:");
   });
 
-  it("GitHub Pages配下でも読み込めるようにスクリプトのパスを解決する", () => {
-    expect(page).toContain("BASE_URL");
-    expect(page).toContain("scripts/card-lighting.js");
+  it("クライアントスクリプトはAstro-managed local scriptとして読み込む", () => {
+    expect(page).toContain('<script src="../scripts/card-lighting.ts"></script>');
+    expect(page).not.toContain("BASE_URL");
+    expect(page).not.toContain("scripts/card-lighting.js");
     expect(page).not.toContain('src="/src/scripts/card-lighting.ts"');
-    expect(page).not.toContain("card-lighting.ts");
+  });
+
+  it("クライアントスクリプトの手動bundleコマンドを持たない", () => {
+    expect(packageJson.scripts).not.toHaveProperty("predev");
+    expect(packageJson.scripts).not.toHaveProperty("prebuild");
+    expect(packageJson.scripts).not.toHaveProperty("bundle");
+    expect(Object.values(packageJson.scripts).join("\n")).not.toContain("public/scripts/card-lighting.js");
+    expect(Object.values(packageJson.scripts).join("\n")).not.toContain("esbuild src/scripts/card-lighting.ts");
   });
 
   it("デフォルトのエフェクトはRadiant Burstにする", () => {
